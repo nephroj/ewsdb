@@ -1,0 +1,37 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./static:/static
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - web
+  web:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: web
+    command: gunicorn aaadir.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./backend:/usr/src/app
+      - ./static:/usr/src/static
+    expose:
+      - "8000"
+    depends_on:
+      - db
+  db:
+    image: mariadb:latest
+    container_name: mysql
+    ports:
+      - "3306:3306/tcp"
+    env_file:
+      - ./backend/django.env
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/data/conf.d:/etc/mysql/conf.d

@@ -1,0 +1,110 @@
+.height70 {
+  min-height: 70vh;
+}
+/* card shadow in login page */
+.back-shadow {
+  box-shadow: 0px 4px 8px 0 rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  font-size: 200%;
+  font-weight: bolder;
+}
+a {
+  color: steelblue;
+  text-decoration: none;
+}
+a:hover {
+  color: dodgerblue;
+  text-decoration: none;
+}
+
+/* Button color */
+.btn-steelblue {
+  color: white;
+  background-color: steelblue;
+  border-color: steelblue;
+}
+.btn-steelblue:hover,
+.btn-steelblue:focus,
+.btn-steelblue:active,
+.btn-steelblue.active,
+.open .dropdown-toggle.btn-steelblue {
+  color: #fff;
+  background-color: rgb(86, 142, 189);
+  border-color: rgb(86, 142, 189);
+}
+
+.btn-slategray {
+  color: white;
+  background-color: slategrey;
+  border-color: slategrey;
+}
+.btn-slategray:hover,
+.btn-slategray:focus,
+.btn-slategray:active,
+.btn-slategray.active,
+.open .dropdown-toggle.btn-slategray {
+  color: #fff;
+  background-color: rgb(128, 144, 160);
+  border-color: rgb(128, 144, 160);
+}
+
+.btn-seagreen {
+  color: white;
+  background-color: seagreen;
+  border-color: seagreen;
+}
+.btn-seagreen:hover,
+.btn-seagreen:focus,
+.btn-seagreen:active,
+.btn-seagreen.active,
+.open .dropdown-toggle.btn-seagreen {
+  color: #fff;
+  background-color: rgb(63, 158, 104);
+  border-color: rgb(63, 158, 104);
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.text-left {
+  text-align: left;
+}
+.text-warning {
+  color: darkred;
+}
+
+.navbar-brand,
+.nav-link {
+  font-weight: 500;
+}
