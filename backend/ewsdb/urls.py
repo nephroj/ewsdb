@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 from rest_framework import routers
 from prevdata.views import AdmInfoViewSet, DischargeInfoViewSet, VitalViewSet, LabViewSet
-from simulator.views import SimulatorAPI, SimStatusViewSet
+from simulator.views import SimulatorAPI, SimStatusViewSet, simstatus_initialize
 
 router = routers.DefaultRouter()
 router.register('adminfo', AdmInfoViewSet, basename='adminfo')
@@ -24,6 +24,9 @@ urlpatterns = [
 
     # Admin
     path('admin/', admin.site.urls),
+
+    # Other function
+    path('sim-initial/', simstatus_initialize, name="sim_initial"),
 
     # 그 외 모든 url은 Reactjs로 보냄
     re_path(r'^(?:.*)/?$', TemplateView.as_view(template_name='react.html')),   

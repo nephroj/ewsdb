@@ -94,10 +94,16 @@ class SimulatorAPI(APIView):
             result_text = "명령 전달 실패"
         return Response(result_text)
 
-
+from django.http import HttpResponse
+def simstatus_initialize(request):
+    time1 = SimStatus(key="time_last", value=datetime.datetime(2018, 1, 1, 0, 0, 0))
+    time1.save()
+    isactive1 = SimStatus(key="is_active", value=0)
+    isactive1.save()
+    return(HttpResponse("Initialize SimStatus successively!"))
 
 class SimStatusViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = SimStatus.objects.filter(id__gt=0)
+    queryset = SimStatus.objects.all()
     serializer_class = SimStatusSerializer

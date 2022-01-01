@@ -9,26 +9,26 @@ from .models import AdmInfo, DischargeInfo, Vital, Lab
 class AdmInfoViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = AdmInfo.objects.filter(id__gt=0)
+    queryset = AdmInfo.objects.all()
     serializer_class = AdmInfoSerializer
 
 
 class DischargeInfoViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = DischargeInfo.objects.filter(id__gt=0)
+    queryset = DischargeInfo.objects.all()
     serializer_class = DischargeInfoSerializer
 
 
 class VitalViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Vital.objects.filter(id__gt=0)
+    queryset = Vital.objects.all()
     serializer_class = VitalSerializer
 
 
 class LabViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Lab.objects.filter(id__gt=0)
+    queryset = Lab.objects.all()
     serializer_class = LabSerializer
