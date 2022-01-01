@@ -10,7 +10,10 @@ from threading import Thread
 
 from prevdata.models import AdmInfo, DischargeInfo, Vital, Lab
 from .models import AdmInfoSim, DischargeInfoSim, VitalSim, LabSim, SimStatus
-from .serializers import SimStatusSerializer
+from .serializers import (
+    SimStatusSerializer, AdmInfoSimSerializer, DischargeInfoSimSerializer, 
+    VitalSimSerializer, LabSimSerializer
+)
 
 
 def stack_data(speed, from_prev=1):
@@ -107,3 +110,27 @@ class SimStatusViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = SimStatus.objects.all()
     serializer_class = SimStatusSerializer
+
+class AdmInfoSimViewSet(viewsets.ReadOnlyModelViewSet):
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = AdmInfoSim.objects.all()
+    serializer_class = AdmInfoSimSerializer
+
+class DischargeInfoSimViewSet(viewsets.ReadOnlyModelViewSet):
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = DischargeInfoSim.objects.all()
+    serializer_class = DischargeInfoSimSerializer
+
+class VitalSimViewSet(viewsets.ReadOnlyModelViewSet):
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = VitalSim.objects.all()
+    serializer_class = VitalSimSerializer
+
+class LabSimViewSet(viewsets.ReadOnlyModelViewSet):
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = LabSim.objects.all()
+    serializer_class = LabSimSerializer

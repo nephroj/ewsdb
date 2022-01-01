@@ -4,13 +4,17 @@ from django.views.generic import TemplateView
 
 from rest_framework import routers
 from prevdata.views import AdmInfoViewSet, DischargeInfoViewSet, VitalViewSet, LabViewSet
-from simulator.views import SimulatorAPI, SimStatusViewSet, simstatus_initialize
+from simulator.views import *
 
 router = routers.DefaultRouter()
 router.register('adminfo', AdmInfoViewSet, basename='adminfo')
 router.register('dischargeinfo', DischargeInfoViewSet, basename='dischargeinfo')
 router.register('vital', VitalViewSet, basename='vital')
 router.register('lab', LabViewSet, basename='lab')
+router.register('adminfosim', AdmInfoSimViewSet, basename='adminfosim')
+router.register('dischargeinfosim', DischargeInfoSimViewSet, basename='dischargeinfosim')
+router.register('vitalsim', VitalSimViewSet, basename='vitalsim')
+router.register('labsim', LabSimViewSet, basename='labsim')
 router.register('simstatus', SimStatusViewSet, basename='simstatus')
 
 urlpatterns = [
