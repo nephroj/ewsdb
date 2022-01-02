@@ -3,16 +3,14 @@ from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 
 from rest_framework import routers
-from prevdata.views import AdmInfoViewSet, DischargeInfoViewSet, VitalViewSet, LabViewSet
+from prevdata.views import *
 from simulator.views import *
 
 router = routers.DefaultRouter()
-router.register('adminfo', AdmInfoViewSet, basename='adminfo')
-router.register('dischargeinfo', DischargeInfoViewSet, basename='dischargeinfo')
+router.register('hospinfo', HospInfoViewSet, basename='hospinfo')
 router.register('vital', VitalViewSet, basename='vital')
 router.register('lab', LabViewSet, basename='lab')
-router.register('adminfosim', AdmInfoSimViewSet, basename='adminfosim')
-router.register('dischargeinfosim', DischargeInfoSimViewSet, basename='dischargeinfosim')
+router.register('hospinfosim', HospInfoSimViewSet, basename='hospinfosim')
 router.register('vitalsim', VitalSimViewSet, basename='vitalsim')
 router.register('labsim', LabSimViewSet, basename='labsim')
 router.register('simstatus', SimStatusViewSet, basename='simstatus')
@@ -24,6 +22,7 @@ urlpatterns = [
     # API
     path('api/', include(router.urls)),
     path('api/simulator/', SimulatorAPI.as_view(), name="simulator"),
+    path('api/simstatusv/', SimStatusAPIView.as_view(), name="simstatusv"),
     path('api/auth/', include('dj_rest_auth.urls')),
 
     # Admin

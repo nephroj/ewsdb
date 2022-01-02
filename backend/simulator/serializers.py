@@ -1,19 +1,14 @@
 from rest_framework import serializers
-from .models import SimStatus, AdmInfoSim, DischargeInfoSim, VitalSim, LabSim
+from .models import SimStatus, HospInfoSim, VitalSim, LabSim
 
 class SimStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = SimStatus
         fields = '__all__'
 
-class AdmInfoSimSerializer(serializers.ModelSerializer):
+class HospInfoSimSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AdmInfoSim
-        fields = '__all__'
-
-class DischargeInfoSimSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DischargeInfoSim
+        model = HospInfoSim
         fields = '__all__'
 
 class VitalSimSerializer(serializers.ModelSerializer):

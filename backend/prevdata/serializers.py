@@ -1,16 +1,11 @@
 from rest_framework import serializers
-from .models import AdmInfo, DischargeInfo, Vital, Lab
+from .models import HospInfo, Vital, Lab
 
-class AdmInfoSerializer(serializers.ModelSerializer):
+class HospInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AdmInfo
+        model = HospInfo
         fields = '__all__'
 
-
-class DischargeInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DischargeInfo
-        fields = '__all__'
 
 class VitalSerializer(serializers.ModelSerializer):
     class Meta:
