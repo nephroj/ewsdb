@@ -11,7 +11,7 @@ from threading import Thread
 from prevdata.models import HospInfo, Vital, Lab
 from .models import HospInfoSim, VitalSim, LabSim, SimStatus
 from .serializers import (
-    SimStatusSerializer, HospInfoSimSerializer,
+    HospInfoSimSerializer,
     VitalSimSerializer, LabSimSerializer
 )
 
@@ -124,12 +124,6 @@ def simstatus_initialize(request):
 
 
 # Rest Framework Viewsets
-class SimStatusViewSet(viewsets.ReadOnlyModelViewSet):
-    authentication_classes = (TokenAuthentication, BasicAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
-    queryset = SimStatus.objects.all()
-    serializer_class = SimStatusSerializer
-
 class SimStatusAPIView(APIView):
     authentication_classes = (TokenAuthentication, BasicAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)

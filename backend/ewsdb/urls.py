@@ -13,7 +13,6 @@ router.register('lab', LabViewSet, basename='lab')
 router.register('hospinfosim', HospInfoSimViewSet, basename='hospinfosim')
 router.register('vitalsim', VitalSimViewSet, basename='vitalsim')
 router.register('labsim', LabSimViewSet, basename='labsim')
-router.register('simstatus', SimStatusViewSet, basename='simstatus')
 
 urlpatterns = [
     # Reactjs
@@ -22,7 +21,8 @@ urlpatterns = [
     # API
     path('api/', include(router.urls)),
     path('api/simulator/', SimulatorAPI.as_view(), name="simulator"),
-    path('api/simstatusv/', SimStatusAPIView.as_view(), name="simstatusv"),
+    path('api/simstatus/', SimStatusAPIView.as_view(), name="simstatus"),
+    path('api/datainfo/', DataInfoAPIView.as_view(), name="datainfo"),   
     path('api/auth/', include('dj_rest_auth.urls')),
 
     # Admin
