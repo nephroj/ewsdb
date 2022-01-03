@@ -1,11 +1,4 @@
-import React from "react";
-import {
-  RecoilRoot,
-  atom,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-} from "recoil";
+import { atom, selector } from "recoil";
 
 // define atoms
 export const isAuthAtom = atom({
@@ -13,10 +6,7 @@ export const isAuthAtom = atom({
   default: false,
 });
 
-// define selector
-
-function index() {
-  return <div></div>;
-}
-
-export default index;
+export const updateLoadingAtom = atom({
+  key: "updateLoading1Atom",
+  default: false,
+});

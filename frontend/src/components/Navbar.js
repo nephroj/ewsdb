@@ -13,7 +13,7 @@ function Navbar() {
       {isAuth && (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
           <div className="container">
-            <Link to="/" className="navbar-brand">
+            <div className="navbar-brand">
               <img
                 src={logo}
                 width="35"
@@ -22,7 +22,7 @@ function Navbar() {
                 alt=""
               />
               EWS Simulator
-            </Link>
+            </div>
             <button
               className="navbar-toggler"
               type="button"
@@ -36,6 +36,11 @@ function Navbar() {
             </button>
             <div className="collapse navbar-collapse" id="navbarNav">
               <ul className="navbar-nav">
+                <li className="nav-item">
+                  <Link to="/" className="nav-link">
+                    Home
+                  </Link>
+                </li>
                 <li className="nav-item">
                   <Link to="/instruction" className="nav-link">
                     설명서

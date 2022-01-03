@@ -28,8 +28,8 @@ function Logout(props) {
       .then((res) => res.json())
       .then((data) => {
         localStorage.clear();
-        navigate("/");
         setIsAuth(false);
+        navigate("/");
       });
   };
 

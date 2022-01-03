@@ -19,7 +19,7 @@ a:hover {
   text-decoration: none;
 }
 
-/* Button color */
+/* Button color: steelblue */
 .btn-steelblue {
   color: white;
   background-color: steelblue;
@@ -30,11 +30,12 @@ a:hover {
 .btn-steelblue:active,
 .btn-steelblue.active,
 .open .dropdown-toggle.btn-steelblue {
-  color: #fff;
+  color: white;
   background-color: rgb(86, 142, 189);
   border-color: rgb(86, 142, 189);
 }
 
+/* Button color: slategray */
 .btn-slategray {
   color: white;
   background-color: slategrey;
@@ -45,11 +46,12 @@ a:hover {
 .btn-slategray:active,
 .btn-slategray.active,
 .open .dropdown-toggle.btn-slategray {
-  color: #fff;
+  color: white;
   background-color: rgb(128, 144, 160);
   border-color: rgb(128, 144, 160);
 }
 
+/* Button color: seagreen */
 .btn-seagreen {
   color: white;
   background-color: seagreen;
@@ -60,9 +62,25 @@ a:hover {
 .btn-seagreen:active,
 .btn-seagreen.active,
 .open .dropdown-toggle.btn-seagreen {
-  color: #fff;
+  color: white;
   background-color: rgb(63, 158, 104);
   border-color: rgb(63, 158, 104);
+}
+
+/* Button color: cadetblue */
+.btn-cadetblue {
+  color: white;
+  background-color: cadetblue;
+  border-color: cadetblue;
+}
+.btn-cadetblue:hover,
+.btn-cadetblue:focus,
+.btn-cadetblue:active,
+.btn-cadetblue.active,
+.open .dropdown-toggle.btn-cadetblue {
+  color: white;
+  background-color: rgb(114, 173, 175);
+  border-color: rgb(114, 173, 175);
 }
 
 .App {
@@ -104,7 +122,72 @@ a:hover {
   color: darkred;
 }
 
-.navbar-brand,
-.nav-link {
-  font-weight: 500;
+/* navbar */
+.navbar {
+  padding-top: 0rem;
+  padding-bottom: 0rem;
+}
+.navbar-dark {
+  background-color: #0f5984;
+}
+.navbar-dark .navbar-brand:not(.nohover):link {
+  color: #ffffff;
+}
+/* change the link color */
+.navbar-dark .nav-link:not(.nohover):link {
+  color: #ffffff;
+}
+.navbar-dark .nav-link:not(.nohover):hover {
+  color: #ffc107;
+}
+/* add a shadow */
+.navbar-dark {
+  -webkit-box-shadow: 0 8px 6px -6px #999;
+  -moz-box-shadow: 0 8px 6px -6px #999;
+  box-shadow: 0 8px 6px -6px #999;
+  /* the rest of your styling */
+}
+
+/* 화면크기에 따라 각 메뉴의 밑줄 설정 및 드롭다운 메뉴 설정 */
+/* ★ 작은 화면 ★ */
+@media only screen and (max-width: 768px) {
+  .navbar-dark .navbar-nav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 8px 0px 8px 24px; /* 각 항목의 위 아래 왼쪽 마진 조절 */
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease-in-out;
+  }
+  .navbar-dark .navbar-nav .nav-link:hover {
+    transition: all 0.2s ease-in-out;
+  }
+  .navbar-dark .navbar-nav .nav-link.active {
+    color: #ffc107;
+  }
+}
+/* ★ 큰 화면 ★ */
+@media only screen and (min-width: 768px) {
+  .navbar-dark .navbar-nav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 16px 16px;
+    text-decoration: none;
+    font-size: 15px;
+    border-bottom: 4px solid transparent;
+    transition: all 0.15s ease-in-out;
+  }
+  .navbar-dark .navbar-nav .nav-link:hover {
+    border-bottom: 4px solid #ffc107;
+    transition: all 0.15s ease-in-out;
+  }
+  .navbar-dark .navbar-nav .nav-link.active {
+    border-bottom: 4px solid #ffc107;
+    color: #ffc107;
+  }
 }

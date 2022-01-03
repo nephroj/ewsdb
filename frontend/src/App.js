@@ -28,7 +28,7 @@ function App() {
   // 특정시간동안 활동이 없으면 logout 시행
   const handleOnIdle = (event) => {
     if (isAuth) {
-      fetch("/auth/logout/", {
+      fetch("/api/auth/logout/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

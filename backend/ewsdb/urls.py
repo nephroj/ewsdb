@@ -28,9 +28,6 @@ urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
 
-    # Other function
-    path('sim-initial/', simstatus_initialize, name="sim_initial"),
-
     # 그 외 모든 url은 Reactjs로 보냄
     re_path(r'^(?:.*)/?$', TemplateView.as_view(template_name='react.html')),   
 ]
