@@ -2,7 +2,7 @@ import React from "react";
 
 function Instruction() {
   return (
-    <div>
+    <div className="container">
       <h1>Instruction</h1>
     </div>
   );

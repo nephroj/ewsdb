@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { isAuthAtom } from "../Store";
@@ -7,11 +7,12 @@ import logo from "../logo.svg";
 
 function Navbar() {
   const isAuth = useRecoilValue(isAuthAtom);
+  const [isNavCollapsed, setIsNavCollapsed] = useState(true);
 
   return (
     <React.Fragment>
       {isAuth && (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-md navbar-dark sticky-top bg-dark">
           <div className="container">
             <div className="navbar-brand">
               <img
@@ -29,12 +30,16 @@ function Navbar() {
               data-bs-toggle="collapse"
               data-bs-target="#navbarNav"
               aria-controls="navbarNav"
-              aria-expanded="false"
+              aria-expanded={!isNavCollapsed ? true : false}
               aria-label="Toggle navigation"
+              onClick={() => setIsNavCollapsed(!isNavCollapsed)}
             >
               <span className="navbar-toggler-icon"></span>
             </button>
-            <div className="collapse navbar-collapse" id="navbarNav">
+            <div
+              className={`${isNavCollapsed ? "collapse" : ""} navbar-collapse`}
+              id="navbarNav"
+            >
               <ul className="navbar-nav">
                 <li className="nav-item">
                   <Link to="/" className="nav-link">

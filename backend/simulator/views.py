@@ -1,6 +1,6 @@
 from django.forms.models import model_to_dict
 from django.utils import timezone
-from django.db.models import Min
+from django.db.models import Min, Max
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, viewsets
@@ -23,8 +23,13 @@ from ewsdb.utils import sim_status_update, sim_status_get
 def data_first_time():
     adm_date_min_int = HospInfo.objects.all().aggregate(Min("adm_date"))["adm_date__min"]
     adm_date_min  = datetime.strptime(str(adm_date_min_int), "%Y%m%d")
-    # adm_date_min = adm_date_min_text[0:4] + "-" + adm_date_min_text[4:6] + "-" + adm_date_min_text[6:8]
-    return str(adm_date_min)
+    return adm_date_min
+
+# 입원 데이터 상 마지막 날짜 골라내기
+def data_last_time():
+    adm_date_max_int = HospInfo.objects.all().aggregate(Max("adm_date"))["adm_date__max"]
+    adm_date_max  = datetime.strptime(str(adm_date_max_int), "%Y%m%d")
+    return adm_date_max
 
 # Simulator main function
 def stack_data(speed, from_prev=1):
@@ -34,6 +39,7 @@ def stack_data(speed, from_prev=1):
 
     # first_time을 데이터 첫 입원 날짜로 지정
     first_time = data_first_time()
+    last_time = data_last_time()
 
     # 시작 전 simulation table을 TRUNCATE 시행 후 시작
     for SimModel in SIM_MODELS:
@@ -54,7 +60,7 @@ def stack_data(speed, from_prev=1):
 
     # 시작 전 SimStatus를 초기화하고 시작
     update_list = [
-        ["avg_save_time", 1],
+        ["avg_save_time", 0],
         ["sim_start_time", sim_start_time],
         ["sim_data_last_time", sim_data_last_time],  
         ["sim_last_time", ""],
@@ -79,14 +85,12 @@ def stack_data(speed, from_prev=1):
     data_n = [0, 0, 0]
     unit_data_start_time = sim_data_start_time
     unit_data_last_time = unit_data_start_time + timedelta(seconds=speed)    
-    while is_active:
-        unit_start_time = timezone.now().replace(microsecond=0)        
-        
+    while is_active and unit_data_start_time <= last_time:
+        unit_start_time = timezone.now()    
         print(f'{unit_data_start_time} - {unit_data_last_time}')
 
         for i, (PrevModel, SimModel) in enumerate(zip(PREV_MODELS, SIM_MODELS)):
             new_queryset = PrevModel.objects.filter(value_datetime__gte=unit_data_start_time, value_datetime__lt=unit_data_last_time)
-
             print("save start:\t", timezone.now().replace(microsecond=0))
             new_dicts = [SimModel(**item, new_datetime=timezone.now()) for item in new_queryset.values()]
             SimModel.objects.bulk_create(new_dicts)
@@ -95,7 +99,7 @@ def stack_data(speed, from_prev=1):
 
         unit_data_start_time = unit_data_last_time
         unit_data_last_time = unit_data_start_time + timedelta(seconds=speed)
-        unit_end_time = timezone.now().replace(microsecond=0)
+        unit_end_time = timezone.now()
         time_spent = unit_end_time - unit_start_time
         time_spent = time_spent.seconds + time_spent.microseconds/1000000
         n += 1
@@ -110,8 +114,8 @@ def stack_data(speed, from_prev=1):
             sim_speed = sim_data_duration/sim_duration
             update_list = [
                 ["avg_save_time", round(sec/n, 3)],
-                ["sim_data_last_time", unit_data_start_time],  
-                ["sim_last_time", unit_end_time],
+                ["sim_data_last_time", unit_data_start_time.replace(microsecond=0)],  
+                ["sim_last_time", unit_end_time.replace(microsecond=0)],
                 ["sim_data_duration", math.floor(sim_data_duration/60)],
                 ["sim_duration", math.floor(sim_duration/60)],    
                 ["sim_speed", round(sim_speed)], 

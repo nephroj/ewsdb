@@ -71,8 +71,8 @@ function HomeUI() {
   }
 
   return (
-    <div className="container py-3">
-      <section className="pt-5 pb-4 text-center container">
+    <div className="container">
+      <section className="pt-5 pb-4 text-center">
         <div className="row py-lg-4">
           <div className="col-lg-6 col-md-8 mx-auto">
             <h1 className="fw-light">입원 데이터 시뮬레이션</h1>
