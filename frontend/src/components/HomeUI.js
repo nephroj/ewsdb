@@ -6,10 +6,12 @@ import { updateLoadingAtom } from "../Store";
 
 function HomeUI() {
   const [simStatus, setSimStatus] = useState({});
+  const [dataStatus, setDataStatus] = useState({});
   const [updateLoading, setUpdateLoading1] = useRecoilState(updateLoadingAtom);
 
   useEffect(() => {
     getSimStatus();
+    getDataStatus();
   }, [updateLoading]);
 
   async function getSimStatus() {
@@ -34,7 +36,24 @@ function HomeUI() {
     }
   }
 
-  async function updateDataInfo() {
+  async function getDataStatus() {
+    try {
+      const res = await axios({
+        method: "get",
+        url: "/api/datainfo/",
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      });
+      const results = res.data;
+      console.log(results);
+      setDataStatus(results);
+    } catch (err) {
+      console.log(err.response.data.detail);
+    }
+  }
+
+  async function updateDataStatus() {
     try {
       setUpdateLoading1(true);
       const res = await axios({
@@ -46,7 +65,6 @@ function HomeUI() {
         data: { action: "update" },
       });
       const results = res.data;
-      console.log(results);
       setUpdateLoading1(false);
     } catch (err) {
       console.log(err.response.data);
@@ -54,12 +72,19 @@ function HomeUI() {
     }
   }
 
-  function make_comma(int_text) {
-    const text = parseInt(int_text).toLocaleString("en-US");
-    return text;
+  function make_comma(number) {
+    if (!number) {
+      return number;
+    } else if (typeof number == "number") {
+      const text = number.toLocaleString("en-US");
+      return text;
+    } else {
+      return number;
+    }
   }
-  function make_date(date_text, sep = "/") {
-    if (date_text) {
+  function make_date(date, sep = "/") {
+    if (date) {
+      const date_text = String(date);
       const text =
         date_text.substring(0, 4) +
         sep +
@@ -67,6 +92,8 @@ function HomeUI() {
         sep +
         date_text.substring(6, 8);
       return text;
+    } else {
+      return date;
     }
   }
 
@@ -113,18 +140,18 @@ function HomeUI() {
                 데이터입니다. 전산과에서 제공받은 데이터가 거의 가공 없이 저장된
                 상태입니다.
               </p>
-              <ul className={"icon-list" + (updateLoading && " text-muted")}>
+              <ul className={`icon-list ${updateLoading && "text-muted"}`}>
                 <li>
-                  포함된 기간: {make_date(simStatus.adm_date__min)}~
-                  {make_date(simStatus.adm_date__max)}
+                  포함된 기간: {make_date(dataStatus.adm_date_min)}~
+                  {make_date(dataStatus.adm_date_max)}
                 </li>
-                <li>전체 입원 수: {make_comma(simStatus.adm__count)}개</li>
-                <li>전체 환자 수: {make_comma(simStatus.studyid__count)}명</li>
+                <li>전체 입원 수: {make_comma(dataStatus.adm_count)}개</li>
+                <li>전체 환자 수: {make_comma(dataStatus.studyid_count)}명</li>
                 <li>
-                  전체 vital sign 행수: {make_comma(simStatus.vital__count)}개
+                  전체 vital sign 행수: {make_comma(dataStatus.vital_count)}개
                 </li>
                 <li>
-                  전체 lab 데이터 행수: {make_comma(simStatus.lab__count)}개
+                  전체 lab 데이터 행수: {make_comma(dataStatus.lab_count)}개
                 </li>
               </ul>
               {updateLoading ? (
@@ -140,7 +167,7 @@ function HomeUI() {
                     to="/instruction"
                     className="btn btn-cadetblue col-12 col-md-6 mx-auto"
                     type="button"
-                    onClick={updateDataInfo}
+                    onClick={updateDataStatus}
                   >
                     정보 업데이트
                   </button>

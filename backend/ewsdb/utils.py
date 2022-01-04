@@ -1,4 +1,22 @@
+from datetime import datetime
+from django.db.models import Min, Max
+
+from prevdata.models import HospInfo
 from simulator.models import SimStatus
+
+
+# 입원 데이터 상 첫 날짜 골라내기
+def get_first_time():
+    adm_date_min_int = HospInfo.objects.all().aggregate(Min("adm_date"))["adm_date__min"]
+    adm_date_min  = datetime.strptime(str(adm_date_min_int), "%Y%m%d")
+    return adm_date_min
+
+
+# 입원 데이터 상 마지막 날짜 골라내기
+def get_last_time():
+    adm_date_max_int = HospInfo.objects.all().aggregate(Max("adm_date"))["adm_date__max"]
+    adm_date_max  = datetime.strptime(str(adm_date_max_int), "%Y%m%d")
+    return adm_date_max
 
 
 # SimStatus에 key, value 값을 update - 이 전에 없었으면 새로 생성
@@ -31,3 +49,30 @@ def sim_status_get(key, initial):
         new_data = SimStatus(key=key, value=initial)
         new_data.save()
         return(str(initial))
+
+
+# 새로운 데이터에 대한 dict를 전달 받아 Model을 업데이트
+def status_update(Model, dict_data):
+    old_obj = Model.objects.all()               
+    if len(old_obj) == 0:              # 완전 처음 생성
+        new_data = dict()
+        fields = [fields.name for fields in Model._meta.fields] 
+        for field in fields:
+            field_type = Model._meta.get_field(field).get_internal_type()
+            if field in dict_data.keys():
+                new_data[field] = dict_data[field]
+            elif field == "id":
+                new_data["id"] = 1
+            elif field_type == "IntegerField":
+                new_data[field] = 0  
+            elif field_type == "DateTimeField":
+                new_data[field] = get_first_time() 
+            else:
+                new_data[field] = "" 
+    else:                               # 이전 데이터가 있으면 업데이트
+        new_data = old_obj.values()[0]
+        for key, value in dict_data.items():
+            new_data[key] = value
+
+    new_obj = Model(**new_data)
+    new_obj.save() 

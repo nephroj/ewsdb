@@ -14,16 +14,18 @@ function Navbar() {
       {isAuth && (
         <nav className="navbar navbar-expand-md navbar-dark sticky-top bg-dark">
           <div className="container">
-            <div className="navbar-brand">
-              <img
-                src={logo}
-                width="35"
-                height="35"
-                className="App-logo d-inline-block align-center"
-                alt=""
-              />
-              EWS Simulator
-            </div>
+            <Link to="/" className="nav-link">
+              <div className="navbar-brand">
+                <img
+                  src={logo}
+                  width="35"
+                  height="35"
+                  className="App-logo d-inline-block align-center"
+                  alt=""
+                />
+                EWS Simulator
+              </div>
+            </Link>
             <button
               className="navbar-toggler"
               type="button"
@@ -41,11 +43,11 @@ function Navbar() {
               id="navbarNav"
             >
               <ul className="navbar-nav">
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <Link to="/" className="nav-link">
                     Home
                   </Link>
-                </li>
+                </li> */}
                 <li className="nav-item">
                   <Link to="/instruction" className="nav-link">
                     설명서

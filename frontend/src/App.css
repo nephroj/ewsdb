@@ -132,6 +132,10 @@ a:hover {
   /* the rest of your styling */
 }
 
+.navbar-collapse {
+  transition: all 0.2s ease-in-out;
+}
+
 /* 화면크기에 따라 각 메뉴의 밑줄 설정 및 드롭다운 메뉴 설정 */
 /* ★ 작은 화면 ★ */
 @media only screen and (max-width: 768px) {

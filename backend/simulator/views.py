@@ -1,6 +1,5 @@
 from django.forms.models import model_to_dict
 from django.utils import timezone
-from django.db.models import Min, Max
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, viewsets
@@ -16,30 +15,19 @@ from .serializers import (
     HospInfoSimSerializer,
     VitalSimSerializer, LabSimSerializer
 )
-from ewsdb.utils import sim_status_update, sim_status_get
+from ewsdb.utils import sim_status_update, sim_status_get, get_first_time, get_last_time
 
-
-# 입원 데이터 상 첫 날짜 골라내기
-def data_first_time():
-    adm_date_min_int = HospInfo.objects.all().aggregate(Min("adm_date"))["adm_date__min"]
-    adm_date_min  = datetime.strptime(str(adm_date_min_int), "%Y%m%d")
-    return adm_date_min
-
-# 입원 데이터 상 마지막 날짜 골라내기
-def data_last_time():
-    adm_date_max_int = HospInfo.objects.all().aggregate(Max("adm_date"))["adm_date__max"]
-    adm_date_max  = datetime.strptime(str(adm_date_max_int), "%Y%m%d")
-    return adm_date_max
 
 # Simulator main function
 def stack_data(speed, from_prev=1):
+
     # 사용될 models
     PREV_MODELS = [HospInfo, Vital, Lab]
     SIM_MODELS = [HospInfoSim, VitalSim, LabSim]
 
     # first_time을 데이터 첫 입원 날짜로 지정
-    first_time = data_first_time()
-    last_time = data_last_time()
+    first_time = get_first_time()
+    last_time = get_last_time()
 
     # 시작 전 simulation table을 TRUNCATE 시행 후 시작
     for SimModel in SIM_MODELS:
@@ -92,7 +80,7 @@ def stack_data(speed, from_prev=1):
         for i, (PrevModel, SimModel) in enumerate(zip(PREV_MODELS, SIM_MODELS)):
             new_queryset = PrevModel.objects.filter(value_datetime__gte=unit_data_start_time, value_datetime__lt=unit_data_last_time)
             print("save start:\t", timezone.now().replace(microsecond=0))
-            new_dicts = [SimModel(**item, new_datetime=timezone.now()) for item in new_queryset.values()]
+            new_dicts = [SimModel(**item) for item in new_queryset.values()]
             SimModel.objects.bulk_create(new_dicts)
             data_n[i] += len(new_dicts)
             print("save end:\t", timezone.now().replace(microsecond=0), PrevModel, len(new_dicts))  
@@ -127,10 +115,6 @@ def stack_data(speed, from_prev=1):
             values = [item[1] for item in update_list]
             sim_status_update(keys, values)
  
-    # # 실행 마친 후에도 simulation table을 TRUNCATE
-    # for SimModel in SIM_MODELS:
-    #     SimModel.truncate()
-
 
 class SimulatorAPI(APIView):
     authentication_classes = (TokenAuthentication, BasicAuthentication, SessionAuthentication)
