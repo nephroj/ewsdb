@@ -24,13 +24,7 @@ function HomeUI() {
         },
       });
       const results = res.data;
-
-      let simStatusDb = {};
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-        simStatusDb[result.key] = result.value;
-      }
-      setSimStatus(simStatusDb);
+      setSimStatus(results);
     } catch (err) {
       console.log(err.response.data.detail);
     }
@@ -46,7 +40,6 @@ function HomeUI() {
         },
       });
       const results = res.data;
-      console.log(results);
       setDataStatus(results);
     } catch (err) {
       console.log(err.response.data.detail);
@@ -189,7 +182,7 @@ function HomeUI() {
               <ul className="icon-list">
                 <li>
                   작동 여부:{" "}
-                  {parseInt(simStatus.is_active) ? (
+                  {simStatus.is_active ? (
                     <b className="text-success">● 실행 중</b>
                   ) : (
                     <b className="text-danger">● 중지됨</b>
@@ -210,7 +203,7 @@ function HomeUI() {
                   className="btn btn-cadetblue col-12 col-lg-6 mx-auto"
                   type="button"
                   onClick={getSimStatus}
-                  disabled={!parseInt(simStatus.is_active)}
+                  disabled={!simStatus.is_active}
                 >
                   현황 업데이트
                 </button>

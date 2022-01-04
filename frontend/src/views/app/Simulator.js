@@ -1,13 +1,14 @@
 import React, { Fragment, useEffect, useState } from "react";
 import axios from "axios";
 
-const Simulator = () => {
+function Simulator() {
   const [simStatus, setSimStatus] = useState({});
+  const [simLoading, setSimLoading] = useState(false);
 
   useEffect(() => {
     getSimStatus();
 
-    if (parseInt(simStatus.is_active)) {
+    if (simStatus.is_active) {
       const interval = setInterval(() => {
         getSimStatus();
       }, 3000);
@@ -24,14 +25,8 @@ const Simulator = () => {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
       });
-
       const results = res.data;
-      let simStatusDb = {};
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-        simStatusDb[result.key] = result.value;
-      }
-      setSimStatus(simStatusDb);
+      setSimStatus(results);
     } catch (err) {
       console.log(err.response.data.detail);
     }
@@ -39,6 +34,7 @@ const Simulator = () => {
 
   async function onStart(e) {
     e.preventDefault();
+    setSimLoading(true);
     try {
       const res = await axios({
         method: "post",
@@ -57,6 +53,7 @@ const Simulator = () => {
         ...prevState,
         is_active: "1",
       }));
+      setTimeout(() => setSimLoading(false), 3000);
     } catch (err) {
       console.log(err.response.data.detail);
     }
@@ -73,10 +70,6 @@ const Simulator = () => {
         },
       });
       console.log(res.data);
-      // setSimStatus((prevState) => ({
-      //   ...prevState,
-      //   is_active: "0",
-      // }));
     } catch (err) {
       console.log(err.response.data.detail);
     }
@@ -97,7 +90,7 @@ const Simulator = () => {
             <tr>
               <th scope="row">작동 여부</th>
               <td>
-                {parseInt(simStatus.is_active) ? (
+                {simStatus.is_active ? (
                   <b className="text-success">● 실행 중</b>
                 ) : (
                   <b className="text-danger">● 중지됨</b>
@@ -107,7 +100,7 @@ const Simulator = () => {
 
             <tr>
               <th scope="row">실행 시작 시각</th>
-              <td>{simStatus.sim_start_time}</td>
+              <td>{!simLoading && simStatus.sim_start_time}</td>
             </tr>
             <tr>
               <th scope="row">실행 마지막 시각</th>
@@ -115,46 +108,46 @@ const Simulator = () => {
             </tr>
             <tr>
               <th scope="row">실행 시간</th>
-              <td>{simStatus.sim_duration}분</td>
+              <td>{!simLoading && simStatus.sim_duration}분</td>
             </tr>
             <tr>
               <th scope="row">데이터 상 시작 시각</th>
-              <td>{simStatus.sim_data_start_time}</td>
+              <td>{!simLoading && simStatus.sim_data_start_time}</td>
             </tr>
 
             <tr>
               <th scope="row">데이터 상 마지막 시각</th>
-              <td>{simStatus.sim_data_last_time}</td>
+              <td>{!simLoading && simStatus.sim_data_last_time}</td>
             </tr>
             <tr>
               <th scope="row">데이터 상 경과 시간</th>
-              <td>{simStatus.sim_data_duration}분</td>
+              <td>{!simLoading && simStatus.sim_data_duration}분</td>
             </tr>
             <tr>
               <th scope="row">데이터 1회 생성 시간</th>
-              <td>{simStatus.avg_save_time}초</td>
+              <td>{!simLoading && simStatus.avg_save_time}초</td>
             </tr>
             <tr>
               <th scope="row">실제 실행 속도</th>
-              <td>{simStatus.sim_speed}배속</td>
+              <td>{!simLoading && simStatus.sim_speed}배속</td>
             </tr>
             <tr>
               <th scope="row">생성된 입원정보 행 수</th>
-              <td>{simStatus.sim_hosp_n}행</td>
+              <td>{!simLoading && simStatus.sim_hosp_n}행</td>
             </tr>
             <tr>
               <th scope="row">생성된 생체징후 행 수</th>
-              <td>{simStatus.sim_vital_n}행</td>
+              <td>{!simLoading && simStatus.sim_vital_n}행</td>
             </tr>
             <tr>
               <th scope="row">생성된 검사결과 행 수</th>
-              <td>{simStatus.sim_lab_n}행</td>
+              <td>{!simLoading && simStatus.sim_lab_n}행</td>
             </tr>
           </tbody>
         </table>
       </div>
       <div className="d-flex justify-content-center col-lg-6 mx-auto">
-        {parseInt(simStatus.is_active) ? (
+        {simStatus.is_active ? (
           <input
             type="button"
             className="btn btn-slategray btn-lg col-12 col-md-5"
@@ -172,6 +165,6 @@ const Simulator = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Simulator;

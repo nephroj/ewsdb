@@ -49,15 +49,22 @@ class LabSim(models.Model):
             cursor.execute(f'TRUNCATE TABLE {cls._meta.db_table}')
 
 
-class SimStatus(models.Model):
-    key             = models.CharField(max_length=30, blank=True)
-    value           = models.CharField(max_length=30, blank=True)
-    updated         = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.key
+class SimStats(models.Model):
+    is_active            = models.IntegerField(blank=True)
+    sim_start_time       = models.DateTimeField(blank=True)
+    sim_last_time        = models.DateTimeField(blank=True)
+    sim_duration         = models.IntegerField(blank=True)
+    sim_data_start_time  = models.DateTimeField(blank=True)
+    sim_data_last_time   = models.DateTimeField(blank=True)
+    sim_data_duration    = models.IntegerField(blank=True)
+    avg_save_time        = models.FloatField(blank=True)
+    sim_speed            = models.IntegerField(blank=True)
+    sim_hosp_n           = models.IntegerField(blank=True)
+    sim_vital_n          = models.IntegerField(blank=True)
+    sim_lab_n            = models.IntegerField(blank=True)
 
     @classmethod
     def truncate(cls):
         with connection.cursor() as cursor:
-            cursor.execute(f'TRUNCATE TABLE {cls._meta.db_table}')
+            cursor.execute(f'TRUNCATE TABLE {cls._meta.db_table}')    
+

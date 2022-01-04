@@ -2,7 +2,6 @@ from datetime import datetime
 from django.db.models import Min, Max
 
 from prevdata.models import HospInfo
-from simulator.models import SimStatus
 
 
 # 입원 데이터 상 첫 날짜 골라내기
@@ -19,38 +18,6 @@ def get_last_time():
     return adm_date_max
 
 
-# SimStatus에 key, value 값을 update - 이 전에 없었으면 새로 생성
-def sim_status_update(keys, values):
-    if isinstance(keys, str):
-        try:
-            query = SimStatus.objects.get(key=keys)
-            query.value = values
-            query.save()   
-        except:
-            new_data = SimStatus(key=keys, value=values)
-            new_data.save()
-    else:
-        for key, value in zip(keys, values):
-            try:
-                query = SimStatus.objects.get(key=key)
-                query.value = value
-                query.save()   
-            except:
-                new_data = SimStatus(key=key, value=value)
-                new_data.save()
-
-
-# SimStatus에서 key 값에 따른 value를 불러옴 - 만약 key가 없다면 초기값 입력해서 저장
-def sim_status_get(key, initial):
-    try:
-        query = SimStatus.objects.get(key=key)
-        return(query.value) 
-    except:
-        new_data = SimStatus(key=key, value=initial)
-        new_data.save()
-        return(str(initial))
-
-
 # 새로운 데이터에 대한 dict를 전달 받아 Model을 업데이트
 def status_update(Model, dict_data):
     old_obj = Model.objects.all()               
@@ -63,7 +30,7 @@ def status_update(Model, dict_data):
                 new_data[field] = dict_data[field]
             elif field == "id":
                 new_data["id"] = 1
-            elif field_type == "IntegerField":
+            elif field_type in ["IntegerField", "FloatField"]:
                 new_data[field] = 0  
             elif field_type == "DateTimeField":
                 new_data[field] = get_first_time() 
@@ -76,3 +43,46 @@ def status_update(Model, dict_data):
 
     new_obj = Model(**new_data)
     new_obj.save() 
+
+# 데이터 불러오기 - 데이터가 아예 없는 상황이면 initial 값을 지정
+def status_get(Model, key, initial):
+    try:
+        data = Model.objects.all().values()[0]
+        value = data[key]
+    except:
+        status_update(Model, {key: initial})
+        value = initial
+    return value
+
+
+
+# # SimStatus에 key, value 값을 update - 이 전에 없었으면 새로 생성
+# def sim_status_update(keys, values):
+#     if isinstance(keys, str):
+#         try:
+#             query = SimStatus.objects.get(key=keys)
+#             query.value = values
+#             query.save()   
+#         except:
+#             new_data = SimStatus(key=keys, value=values)
+#             new_data.save()
+#     else:
+#         for key, value in zip(keys, values):
+#             try:
+#                 query = SimStatus.objects.get(key=key)
+#                 query.value = value
+#                 query.save()   
+#             except:
+#                 new_data = SimStatus(key=key, value=value)
+#                 new_data.save()
+
+
+# # SimStatus에서 key 값에 따른 value를 불러옴 - 만약 key가 없다면 초기값 입력해서 저장
+# def sim_status_get(key, initial):
+#     try:
+#         query = SimStatus.objects.get(key=key)
+#         return(query.value) 
+#     except:
+#         new_data = SimStatus(key=key, value=initial)
+#         new_data.save()
+#         return(str(initial))
