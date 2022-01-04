@@ -30,10 +30,12 @@ def status_update(Model, dict_data):
                 new_data[field] = dict_data[field]
             elif field == "id":
                 new_data["id"] = 1
-            elif field_type in ["IntegerField", "FloatField"]:
+            elif field_type in ["IntegerField", "FloatField", "BigIntegerField"]:
                 new_data[field] = 0  
             elif field_type == "DateTimeField":
-                new_data[field] = get_first_time() 
+                new_data[field] = get_first_time()
+            elif field_type == "DateField":
+                new_data[field] = get_first_time().date() 
             else:
                 new_data[field] = "" 
     else:                               # 이전 데이터가 있으면 업데이트

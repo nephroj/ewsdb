@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useRecoilState } from "recoil";
 import { updateLoadingAtom } from "../Store";
@@ -8,6 +8,7 @@ function HomeUI() {
   const [simStatus, setSimStatus] = useState({});
   const [dataStatus, setDataStatus] = useState({});
   const [updateLoading, setUpdateLoading1] = useRecoilState(updateLoadingAtom);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getSimStatus();
@@ -65,6 +66,45 @@ function HomeUI() {
     }
   }
 
+  async function onStart(e) {
+    e.preventDefault();
+    try {
+      const res = await axios({
+        method: "post",
+        url: "/api/simulator/",
+        data: {
+          operation: "start",
+          speed: 300,
+          from_prev: 1,
+        },
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log(res.data);
+      navigate("/simulator");
+    } catch (err) {
+      console.log(err.response.data.detail);
+    }
+  }
+
+  async function onStop(e) {
+    e.preventDefault();
+    try {
+      const res = await axios({
+        method: "post",
+        url: "/api/simulator/",
+        data: {
+          operation: "stop",
+        },
+      });
+      console.log(res.data);
+      navigate("/simulator");
+    } catch (err) {
+      console.log(err.response.data.detail);
+    }
+  }
+
   function make_comma(number) {
     if (!number) {
       return number;
@@ -105,14 +145,14 @@ function HomeUI() {
             <p>
               <Link
                 to="/simulator"
-                className="btn btn-steelblue btn-lg mt-2 mx-2"
+                className="btn btn-steelblue btn-lg col-10 col-lg-4 mt-2 mx-2"
                 type="button"
               >
                 시뮬레이터로 이동
               </Link>
               <Link
                 to="/instruction"
-                className="btn btn-slategray btn-lg mt-2"
+                className="btn btn-slategray btn-lg col-10 col-lg-4 mt-2"
                 type="button"
               >
                 설명서로 이동
@@ -176,8 +216,8 @@ function HomeUI() {
               <h3 className="text-center">시뮬레이터 현황</h3>
               <p className="text-center">
                 시뮬레이터의 작동 상황과 요약 정보입니다. 작동 중이 아닐 때는
-                이전 정보가 표시됩니다. 실시간 정보는 시뮬레이터 화면에서
-                확인하여 주세요.
+                이전 정보가 표시됩니다. 추가 설정은 시뮬레이터 화면에서 확인하여
+                주세요.
               </p>
               <ul className="icon-list">
                 <li>
@@ -185,7 +225,7 @@ function HomeUI() {
                   {simStatus.is_active ? (
                     <b className="text-success">● 실행 중</b>
                   ) : (
-                    <b className="text-danger">● 중지됨</b>
+                    <b className="text-danger">● 중지 상태</b>
                   )}
                 </li>
                 <li>실행 시작 시각: {simStatus.sim_start_time}</li>
@@ -198,15 +238,27 @@ function HomeUI() {
               </ul>
 
               <div className="d-grid">
-                <button
-                  to="/instruction"
-                  className="btn btn-cadetblue col-12 col-lg-6 mx-auto"
-                  type="button"
-                  onClick={getSimStatus}
-                  disabled={!simStatus.is_active}
-                >
-                  현황 업데이트
-                </button>
+                {simStatus.is_active ? (
+                  <input
+                    type="button"
+                    className="btn btn-slategray col-12 col-lg-6 mx-auto"
+                    onClick={(e) => {
+                      if (window.confirm("시뮬레이션을 중단하시겠습니까?"))
+                        onStop(e);
+                    }}
+                    value="중지"
+                  />
+                ) : (
+                  <input
+                    type="button"
+                    className="btn btn-seagreen col-12 col-lg-6 mx-auto"
+                    onClick={(e) => {
+                      if (window.confirm("시뮬레이션을 시작하시겠습니까?"))
+                        onStart(e);
+                    }}
+                    value="시작 (100배속)"
+                  />
+                )}
               </div>
             </div>
           </div>

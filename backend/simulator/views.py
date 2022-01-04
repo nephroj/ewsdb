@@ -70,11 +70,13 @@ def stack_data(speed, from_prev=1):
        
     while is_active and unit_data_start_time <= last_time:
         unit_start_time = timezone.now()  
-
+        unit_n = []
+        
         for i, (PrevModel, SimModel) in enumerate(zip(PREV_MODELS, SIM_MODELS)):
             new_queryset = PrevModel.objects.filter(value_datetime__gte=unit_data_start_time, value_datetime__lt=unit_data_last_time)
             new_dicts = [SimModel(**item) for item in new_queryset.values()]
             SimModel.objects.bulk_create(new_dicts)
+            unit_n.append(len(new_dicts))
             data_n[i] += len(new_dicts)  
 
         unit_data_start_time = unit_data_last_time
@@ -84,7 +86,7 @@ def stack_data(speed, from_prev=1):
         time_spent = time_spent.seconds + time_spent.microseconds/1000000
         n += 1
         sec += time_spent
-        print(unit_data_last_time, data_n, f'{round(time_spent, 3)} | {round(sec/n, 3)}')
+        print(unit_data_last_time, unit_n, f'{round(time_spent, 3)} | {round(sec/n, 3)}')
         print("---------------")
         is_active = SimStats.objects.get(id=1).is_active
         if is_active:
