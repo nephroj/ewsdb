@@ -6,9 +6,13 @@ export const isAuthAtom = atom({
   default: false,
 });
 
-export const markdownAtom = atom({
-  key: "markdownAtom",
-  default: "",
+export const mdContentAtom = atom({
+  key: "mdContentAtom",
+  default: {
+    markid: null,
+    title: "",
+    content: "",
+  },
 });
 
 export const updateLoadingAtom = atom({

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import "./markdown-editor.css";
 
 export default function MarkdownViewer(props) {
+  const navigate = useNavigate();
   const [markdownTitle, setMarkdownTitle] = useState(null);
   const [markdownText, setMarkdownText] = useState(null);
   const [markdownList, setMarkdownList] = useState(null);
@@ -15,14 +16,6 @@ export default function MarkdownViewer(props) {
     getMarkdownList();
     getMarkdownText();
   }, [markid]);
-
-  const titleStyle = {
-    color: "white",
-    background: "LightSlateGray",
-    fontSize: "28px",
-    fontWeight: "700",
-    padding: "1rem 1rem",
-  };
 
   async function getMarkdownList() {
     try {
@@ -75,13 +68,18 @@ export default function MarkdownViewer(props) {
                   })}
                 </div>
                 <div className="my-4 d-flex align-items-center justify-content-center">
-                  <button className="btn btn-warning mx-2">생성</button>
+                  <button
+                    className="btn btn-seagreen mx-2"
+                    onClick={() => navigate("/instruction/create")}
+                  >
+                    생성
+                  </button>
                 </div>
               </div>
             </div>
           </div>
           <div className="markdown-body col-md-9 align-items-center">
-            <div style={titleStyle}>
+            <div className="title-style">
               {markid} |&ensp; {markdownTitle}
               <button className="btn btn-slategray btn-sm mx-3">수정</button>
             </div>

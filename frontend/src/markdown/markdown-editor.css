@@ -31,3 +31,11 @@
   outline: none;
   resize: none;
 }
+
+.title-style {
+  color: white;
+  background-color: LightSlateGray;
+  font-size: 28px;
+  font-weight: 700;
+  padding: 1rem 1rem;
+}

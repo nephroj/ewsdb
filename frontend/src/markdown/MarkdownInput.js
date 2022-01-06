@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useRecoilState } from "recoil";
-import { markdownAtom } from "../Store";
+import { mdContentAtom } from "../Store";
 
 export function MarkdownInput(props) {
   const textareaDefaultHeight = window.innerHeight * 0.8 - 100;
-  const [markdownText, setMarkdownText] = useRecoilState(markdownAtom);
+  const [mdContent, setMdContent] = useRecoilState(mdContentAtom);
   const [offsetHeight, setOffsetHeight] = useState(textareaDefaultHeight);
 
   const textAreaStyle = {
@@ -20,9 +20,21 @@ export function MarkdownInput(props) {
     return context.measureText(text).width;
   }
 
+  function onTextChange(e) {
+    setMdContent((prevState) => ({
+      ...prevState,
+      content: e.currentTarget.value,
+    }));
+  }
+  function onTitleChange(e) {
+    setMdContent((prevState) => ({
+      ...prevState,
+      title: e.currentTarget.value,
+    }));
+  }
+
   function onSizeChange(e) {
     const text = e.currentTarget.value;
-
     const texts = text.trim().split("\n");
     const nRows = texts.length;
     const offsetWidth = e.target.offsetWidth;
@@ -45,14 +57,20 @@ export function MarkdownInput(props) {
           <div className="editor-title d-flex align-items-center justify-content-center">
             마크다운 편집기
           </div>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Mark ID"
+            onChange={onTitleChange}
+          />
         </div>
       </div>
 
       <textarea
         className="editor-textarea"
         style={textAreaStyle}
-        value={markdownText}
-        onChange={(e) => setMarkdownText(e.currentTarget.value)}
+        value={mdContent.content}
+        onChange={onTextChange}
         onBlur={onSizeChange}
       />
     </div>
