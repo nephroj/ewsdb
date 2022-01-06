@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/simstatus/', SimStatusAPIView.as_view(), name="simstatus"),
     path('api/datainfo/', DataInfoAPIView.as_view(), name="datainfo"),   
     path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/instruction/', include('instruction.urls')),
 
     # Admin
     path('admin/', admin.site.urls),

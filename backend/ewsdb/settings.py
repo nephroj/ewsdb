@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     
     'prevdata',
     'simulator',
+    'instruction',
 
 ]
 

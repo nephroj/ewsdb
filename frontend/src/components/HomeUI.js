@@ -151,7 +151,7 @@ function HomeUI() {
                 시뮬레이터로 이동
               </Link>
               <Link
-                to="/instruction"
+                to="/instruction/1"
                 className="btn btn-slategray btn-lg col-10 col-lg-4 mt-2"
                 type="button"
               >

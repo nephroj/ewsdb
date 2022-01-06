@@ -49,7 +49,7 @@ function Navbar() {
                   </Link>
                 </li> */}
                 <li className="nav-item">
-                  <Link to="/instruction" className="nav-link">
+                  <Link to="/instruction/1" className="nav-link">
                     설명서
                   </Link>
                 </li>

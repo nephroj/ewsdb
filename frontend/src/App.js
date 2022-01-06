@@ -59,7 +59,7 @@ function App() {
           {localStorage.getItem("token") !== null ? (
             <Route path="/">
               <Route index element={<HomeUI />} />
-              <Route path="instruction" element={<Instruction />} />
+              <Route path="instruction/*" element={<Instruction />} />
               <Route path="simulator" element={<Simulator />} />
               <Route path="logout" element={<Logout />} />
             </Route>
