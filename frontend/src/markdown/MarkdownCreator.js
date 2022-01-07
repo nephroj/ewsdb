@@ -5,7 +5,7 @@ import axios from "axios";
 
 import { MarkdownInput } from "./MarkdownInput";
 import { MarkdownResult } from "./MarkdownResult";
-import { mdContentAtom } from "../Store";
+import { mdContentAtom, mdErrorAtom } from "../Store";
 import "./markdown-editor.css";
 
 export default function MarkdownCreator(props) {
@@ -13,6 +13,7 @@ export default function MarkdownCreator(props) {
   const isCreate = JSON.parse(props.isCreate);
   const { markid } = useParams();
   const [mdContent, setMdContent] = useRecoilState(mdContentAtom);
+  const [mdError, setMdError] = useRecoilState(mdErrorAtom);
   const [markidError, setMarkidError] = useState(null);
 
   async function createInstruction(inputData) {
@@ -33,7 +34,14 @@ export default function MarkdownCreator(props) {
       console.log(response.data);
       navigate(`/instruction/${mdContent.markid}`);
     } catch (error) {
-      setMarkidError(error.response.data.markid);
+      console.log(error.response.data);
+      for (const [key, value] of Object.entries(error.response.data)) {
+        setMdError((prevState) => ({
+          ...prevState,
+          [key]: value[0],
+        }));
+      }
+      setMarkidError(Object.values(error.response.data)[0]);
     }
   }
 
@@ -44,7 +52,6 @@ export default function MarkdownCreator(props) {
           Action={createInstruction}
           isCreate={props.isCreate}
           origMarkid={markid ? markid : 0}
-          markidError={markidError}
         />
       </div>
       <div className="col-md-6 mp-zero">

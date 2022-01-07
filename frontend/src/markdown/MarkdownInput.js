@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import axios from "axios";
-import { mdContentAtom } from "../Store";
+import { mdContentAtom, mdErrorAtom, mdValErrorAtom } from "../Store";
 
 export function MarkdownInput(props) {
   const navigate = useNavigate();
@@ -10,12 +10,18 @@ export function MarkdownInput(props) {
   const origMarkid = parseInt(props.origMarkid);
   const textareaDefaultHeight = window.innerHeight * 0.7 - 100;
   const [mdContent, setMdContent] = useRecoilState(mdContentAtom);
+  const [mdError, setMdError] = useRecoilState(mdErrorAtom);
+  const [mdValError, setMdValError] = useRecoilState(mdValErrorAtom);
   const [offsetHeight, setOffsetHeight] = useState(textareaDefaultHeight);
   const [initializeText, setInitializeText] = useState(isCreate);
   const [markids, setMarkids] = useState(null);
+  // const [mdValError, setMdValError] = useState({
+  //   markid: "",
+  //   title: "",
+  //   content: "",
+  // });
 
   useEffect(() => {
-    getMarkIds();
     if (initializeText) {
       setMdContent({
         markid: "",
@@ -24,6 +30,12 @@ export function MarkdownInput(props) {
       });
       setInitializeText(false);
     }
+    setMdError({
+      markid: "",
+      content: "",
+      title: "",
+    });
+    getMarkIds();
   }, []);
 
   const textAreaStyle = {
@@ -95,24 +107,64 @@ export function MarkdownInput(props) {
       ...prevState,
       [key]: value,
     }));
+    setMdError((prevState) => ({
+      ...prevState,
+      [key]: "",
+    }));
+    setMdValError((prevState) => ({
+      ...prevState,
+      [key]: "",
+    }));
   }
 
+  // Validator
+  function markidVal(e) {
+    const key = e.target.id;
+    const value = e.target.value;
+
+    let error = "";
+    if (!/\d+/.test(value)) {
+      error = "번호를 선택하여 주세요.";
+    }
+    setMdValError((prevState) => ({
+      ...prevState,
+      [key]: error,
+    }));
+  }
+
+  function textVal(e) {
+    const key = e.target.id;
+    const value = e.target.value;
+    let error = "";
+    if (!value) {
+      error = "내용을 입력하여 주세요.";
+    } else if (value.length >= 10000) {
+      error = "10,000자 이하로 입력하여 주세요.";
+    }
+
+    setMdValError((prevState) => ({
+      ...prevState,
+      [key]: error,
+    }));
+  }
   return (
     <div className="editor-body editor-vline">
       <div className="my-3 row">
-        {props.markidError && (
-          <div className="text-invalid">문서 번호를 다시 선택해 주세요.</div>
-        )}
         <div className="col-md-2 mb-3">
           <select
             id="markid"
-            className="form-select"
+            className={`form-select ${
+              mdError.markid || mdValError.markid ? "is-invalid" : ""
+            }`}
             aria-label="MarkID"
-            onChange={onTextChange}
             onFocus={getMarkIds}
+            onChange={onTextChange}
+            onBlur={markidVal}
           >
-            {origMarkid && (
-              <option defaultValue={origMarkid}>{origMarkid}</option>
+            {origMarkid ? (
+              <option value={origMarkid}>{origMarkid}</option>
+            ) : (
+              <option>번호</option>
             )}
             {markids &&
               markids.map((value, key) => {
@@ -123,25 +175,39 @@ export function MarkdownInput(props) {
                 );
               })}
           </select>
+          <div id="invalidMarkid" className="invalid-feedback">
+            {mdError.markid ? mdError.markid : ""}
+            {mdValError.markid ? mdValError.markid : ""}
+          </div>
         </div>
         <div className="col-md-10 mb-3">
           <input
             id="title"
             type="text"
-            className="form-control"
+            className={`form-control ${
+              mdError.title || mdValError.title ? "is-invalid" : ""
+            }`}
             placeholder="제목을 입력해 주세요"
             onChange={onTextChange}
+            onBlur={textVal}
             value={mdContent.title}
           />
+          <div id="invalidTitle" className="invalid-feedback">
+            {mdError.title ? mdError.title : ""}
+            {mdValError.title ? mdValError.title : ""}
+          </div>
         </div>
       </div>
 
       <textarea
         id="content"
-        className="editor-textarea form-control"
+        className={`editor-textarea form-control ${
+          mdError.content || mdValError.content ? "is-invalid" : ""
+        }`}
         style={textAreaStyle}
         value={mdContent.content}
         onChange={onTextChange}
+        onBlur={textVal}
         onFocus={onSizeChange}
         onKeyPress={(e) => {
           if (e.key === "Enter") {
@@ -150,11 +216,25 @@ export function MarkdownInput(props) {
         }}
         placeholder="마크다운 내용을 입력해 주세요"
       />
+      <div id="invalidTitle" className="invalid-feedback">
+        {mdError.content ? mdError.content : ""}
+        {mdValError.content ? mdValError.content : ""}
+      </div>
       <div className="mt-5">
         <div className="d-flex align-items-center justify-content-center">
           <button
             className="btn btn-steelblue mx-2"
             onClick={() => props.Action(mdContent)}
+            disabled={
+              !/\d+/.test(mdContent.markid) ||
+              !mdContent.title ||
+              !mdContent.content ||
+              mdValError.markid ||
+              mdValError.title ||
+              mdValError.content
+                ? true
+                : false
+            }
           >
             저장
           </button>

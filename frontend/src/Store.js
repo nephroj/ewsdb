@@ -14,6 +14,22 @@ export const mdContentAtom = atom({
     content: "",
   },
 });
+export const mdErrorAtom = atom({
+  key: "mdErrorAtom",
+  default: {
+    markid: "",
+    title: "",
+    content: "",
+  },
+});
+export const mdValErrorAtom = atom({
+  key: "mdValErrorAtom",
+  default: {
+    markid: "",
+    title: "",
+    content: "",
+  },
+});
 
 export const updateLoadingAtom = atom({
   key: "updateLoading1Atom",
