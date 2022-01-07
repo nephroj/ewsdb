@@ -27,15 +27,40 @@
 }
 
 .editor-textarea {
-  border: none;
+  /* border: none; */
   outline: none;
   resize: none;
 }
 
 .title-style {
   color: white;
-  background-color: LightSlateGray;
-  font-size: 28px;
+  background-color: rgb(144, 161, 179);
+  font-size: 26px;
   font-weight: 700;
   padding: 1rem 1rem;
+  border-radius: 5px;
+}
+
+.list-group a {
+  color: darkgreen;
+}
+.list-group a:hover {
+  color: rgb(61, 126, 61);
+  text-decoration: none;
+}
+
+.list-group .title {
+  background-color: rgb(122, 172, 122);
+  border-color: rgb(122, 172, 122);
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+  padding: 8px 20px;
+}
+
+.list-group .active {
+  background-color: whitesmoke;
+  color: darkgreen;
+  border-color: lightgray;
+  font-weight: 700;
 }

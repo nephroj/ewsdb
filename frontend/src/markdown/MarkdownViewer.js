@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useRecoilState } from "recoil";
 
+import { mdContentAtom } from "../Store";
 import "./markdown-editor.css";
 
 export default function MarkdownViewer(props) {
   const navigate = useNavigate();
-  const [markdownTitle, setMarkdownTitle] = useState(null);
-  const [markdownText, setMarkdownText] = useState(null);
+  const [mdContent, setMdContent] = useRecoilState(mdContentAtom);
   const [markdownList, setMarkdownList] = useState(null);
   const { markid } = useParams();
 
@@ -38,8 +39,11 @@ export default function MarkdownViewer(props) {
         method: "get",
         url: `/api/instruction/list/${markid}/`,
       });
-      setMarkdownTitle(response.data.title);
-      setMarkdownText(response.data.content);
+      setMdContent({
+        markid: response.data.markid,
+        title: response.data.title,
+        content: response.data.content,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -48,42 +52,49 @@ export default function MarkdownViewer(props) {
   return (
     <div className="container py-3">
       {markdownList && (
-        <div className="row">
-          <div className="markdown-body col-md-3">
-            <div className="mt-5">
-              <div className="row">
-                <div className="list-group col-12 px-4">
-                  {markdownList.map((item, index) => {
-                    return (
-                      <Link
-                        to={`/instruction/${index + 1}`}
-                        type="button"
-                        className="list-group-item list-group-item-action"
-                        aria-current="true"
-                        key={index}
-                      >
-                        {item.markid}.&ensp; {item.title}
-                      </Link>
-                    );
-                  })}
-                </div>
-                <div className="my-4 d-flex align-items-center justify-content-center">
+        <div className="row my-2">
+          <div className="col-md-3 my-3">
+            <div className="row">
+              <div className="list-group col-12 px-4">
+                <li className="list-group-item list-group-item-action title d-flex justify-content-between">
+                  <div>설명서 목차</div>
                   <button
-                    className="btn btn-seagreen mx-2"
+                    className="btn btn-seagreen btn-sm"
                     onClick={() => navigate("/instruction/create")}
                   >
                     생성
                   </button>
-                </div>
+                </li>
+                {markdownList.map((item, index) => {
+                  return (
+                    <Link
+                      to={`/instruction/${item.markid}`}
+                      className={`list-group-item list-group-item-action ${
+                        item.markid == markid ? "active" : ""
+                      }`}
+                      aria-current="true"
+                      key={index}
+                    >
+                      {item.markid}.&ensp; {item.title}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
-          <div className="markdown-body col-md-9 align-items-center">
-            <div className="title-style">
-              {markid} |&ensp; {markdownTitle}
-              <button className="btn btn-slategray btn-sm mx-3">수정</button>
+          <div className="markdown-body col-md-9 my-3 align-items-center">
+            <div className="title-style mb-3 px-lg-4 d-flex justify-content-between">
+              {mdContent.markid} |&ensp; {mdContent.title}
+              <button
+                className="btn btn-slategray btn-sm mx-3"
+                onClick={() =>
+                  navigate(`/instruction/${mdContent.markid}/update`)
+                }
+              >
+                수정
+              </button>
             </div>
-            <ReactMarkdown className="px-2" children={markdownText} />
+            <ReactMarkdown className="px-3" children={mdContent.content} />
           </div>
         </div>
       )}

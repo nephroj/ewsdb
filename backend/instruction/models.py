@@ -4,7 +4,7 @@ from django.db import models
 
 class Instruction(models.Model):
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    markid          = models.IntegerField()
+    markid          = models.IntegerField(unique=True, blank=False)
     title           = models.CharField(max_length=120)
     content         = models.TextField()
     updated         = models.DateTimeField(auto_now=True, auto_now_add=False)

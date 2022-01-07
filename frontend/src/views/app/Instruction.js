@@ -10,8 +10,11 @@ export default function App() {
     <Routes path="">
       <Route index element={<Navigate to="1" />} />
       <Route path=":markid" element={<MarkdownViewer />} />
-      <Route path=":markid/update" element={<MarkdownEditor />} />
-      <Route path="create" element={<MarkdownCreator />} />
+      <Route
+        path=":markid/update"
+        element={<MarkdownCreator isCreate="false" />}
+      />
+      <Route path="create" element={<MarkdownCreator isCreate="true" />} />
     </Routes>
   );
 }

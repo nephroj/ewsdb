@@ -108,6 +108,10 @@ a:hover {
 .text-warning {
   color: darkred;
 }
+.text-invalid {
+  font-size: 85%;
+  color: red;
+}
 
 /* navbar */
 .navbar {
