@@ -35,6 +35,11 @@ export function MarkdownInput(props) {
       content: "",
       title: "",
     });
+    setMdValError({
+      markid: "",
+      content: "",
+      title: "",
+    });
     getMarkIds();
   }, []);
 
@@ -119,6 +124,7 @@ export function MarkdownInput(props) {
 
   // Validator
   function markidVal(e) {
+    e.preventDefault();
     const key = e.target.id;
     const value = e.target.value;
 
@@ -132,14 +138,15 @@ export function MarkdownInput(props) {
     }));
   }
 
-  function textVal(e) {
+  function textVal(e, wordLimit) {
+    e.preventDefault();
     const key = e.target.id;
     const value = e.target.value;
     let error = "";
     if (!value) {
       error = "내용을 입력하여 주세요.";
-    } else if (value.length >= 10000) {
-      error = "10,000자 이하로 입력하여 주세요.";
+    } else if (value.length >= wordLimit) {
+      error = `${wordLimit}자 이하로 입력하여 주세요.`;
     }
 
     setMdValError((prevState) => ({
@@ -149,11 +156,12 @@ export function MarkdownInput(props) {
   }
   return (
     <div className="editor-body editor-vline">
+      {/* <h1 className="mb-3 text-success">[마크다운 에디터]</h1> */}
       <div className="my-3 row">
         <div className="col-md-2 mb-3">
           <select
             id="markid"
-            className={`form-select ${
+            className={`form-select editor-select ${
               mdError.markid || mdValError.markid ? "is-invalid" : ""
             }`}
             aria-label="MarkID"
@@ -184,12 +192,12 @@ export function MarkdownInput(props) {
           <input
             id="title"
             type="text"
-            className={`form-control ${
+            className={`form-control editor-input ${
               mdError.title || mdValError.title ? "is-invalid" : ""
             }`}
             placeholder="제목을 입력해 주세요"
             onChange={onTextChange}
-            onBlur={textVal}
+            onBlur={(e) => textVal(e, 120)}
             value={mdContent.title}
           />
           <div id="invalidTitle" className="invalid-feedback">
@@ -207,7 +215,7 @@ export function MarkdownInput(props) {
         style={textAreaStyle}
         value={mdContent.content}
         onChange={onTextChange}
-        onBlur={textVal}
+        onBlur={(e) => textVal(e, 10000)}
         onFocus={onSizeChange}
         onKeyPress={(e) => {
           if (e.key === "Enter") {

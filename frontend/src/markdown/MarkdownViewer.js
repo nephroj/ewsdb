@@ -83,7 +83,7 @@ export default function MarkdownViewer(props) {
             </div>
           </div>
           <div className="markdown-body col-md-9 my-3 align-items-center">
-            <div className="title-style mb-3 px-lg-4 d-flex justify-content-between">
+            <div className="title-style mb-3 px-lg-4">
               {mdContent.markid} |&ensp; {mdContent.title}
               <button
                 className="btn btn-slategray btn-sm mx-3"

@@ -26,10 +26,20 @@
   font-weight: 700;
 }
 
+.editor-input,
+.editor-select {
+  border-radius: 0;
+}
+
 .editor-textarea {
   /* border: none; */
   outline: none;
   resize: none;
+  border-radius: 0;
+}
+.form-select.is-invalid {
+  padding-right: 0rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23343a40%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27M2 5l6 6 6-6%27/%3e%3c/svg%3e");
 }
 
 .title-style {
@@ -43,6 +53,8 @@
 
 .list-group a {
   color: darkgreen;
+  text-indent: -1.5em;
+  padding-left: 2.2em;
 }
 .list-group a:hover {
   color: rgb(61, 126, 61);
@@ -63,4 +75,14 @@
   color: darkgreen;
   border-color: lightgray;
   font-weight: 700;
+}
+
+.navbar-mp {
+  padding: 5px;
+  background-color: lightgray;
+}
+.navbar-mp .navbar-brand {
+  font-size: 28px;
+
+  padding-bottom: 0;
 }
