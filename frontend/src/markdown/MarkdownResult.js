@@ -11,7 +11,7 @@ export function MarkdownResult(props) {
   return (
     <div className="editor-body">
       {/* <h1 className="mb-3 text-success">[결과 확면]</h1> */}
-      <div className="markdown-body">
+      <div className="markdown-body mb-5">
         {mdContent.title && (
           <div className="title-style mb-3 px-lg-4">
             {mdContent.markid} |&ensp; {mdContent.title}

@@ -1,47 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import axios from "axios";
 import { mdContentAtom, mdErrorAtom, mdValErrorAtom } from "../Store";
 
 export function MarkdownInput(props) {
   const navigate = useNavigate();
-  const isCreate = JSON.parse(props.isCreate);
-  const origMarkid = parseInt(props.origMarkid);
-  const textareaDefaultHeight = window.innerHeight * 0.7 - 100;
   const [mdContent, setMdContent] = useRecoilState(mdContentAtom);
   const [mdError, setMdError] = useRecoilState(mdErrorAtom);
   const [mdValError, setMdValError] = useRecoilState(mdValErrorAtom);
-  const [offsetHeight, setOffsetHeight] = useState(textareaDefaultHeight);
+  const resetMdContent = useResetRecoilState(mdContentAtom);
+  const resetMdError = useResetRecoilState(mdErrorAtom);
+  const resetMdValError = useResetRecoilState(mdValErrorAtom);
+  const isCreate = JSON.parse(props.isCreate);
   const [initializeText, setInitializeText] = useState(isCreate);
+  const origMarkid = parseInt(props.origMarkid);
+  const textareaDefaultHeight = window.innerHeight * 0.7 - 100;
+  const [offsetHeight, setOffsetHeight] = useState(textareaDefaultHeight);
   const [markids, setMarkids] = useState(null);
-  // const [mdValError, setMdValError] = useState({
-  //   markid: "",
-  //   title: "",
-  //   content: "",
-  // });
 
   useEffect(() => {
     if (initializeText) {
-      setMdContent({
-        markid: "",
-        content: "",
-        title: "",
-      });
+      resetMdContent();
       setInitializeText(false);
     }
-    setMdError({
-      markid: "",
-      content: "",
-      title: "",
-    });
-    setMdValError({
-      markid: "",
-      content: "",
-      title: "",
-    });
-    getMarkIds();
+    resetMdError();
+    resetMdValError();
   }, []);
+  useEffect(() => {
+    getMarkIds();
+  }, [mdContent.markid]);
 
   const textAreaStyle = {
     width: "100%",
@@ -55,11 +43,15 @@ export function MarkdownInput(props) {
         method: "get",
         url: `/api/instruction/list/`,
       });
+
+      // 현재 사용 중인 markid list를 얻음
       let markidarray = [];
       for (let i = 0; i < response.data.results.length; i++) {
         const item = response.data.results[i];
         markidarray.push(item.markid);
       }
+
+      // 사용 중이 아닌 markid 10개를 순차적으로 얻어서 markids에 저장함
       let markidCandidate = [];
       for (let i = 1; i < 100; i++) {
         if (!markidarray.includes(i)) {
@@ -70,6 +62,14 @@ export function MarkdownInput(props) {
         }
       }
       setMarkids(markidCandidate);
+
+      // create 상황에서 markid가 초기화되면 초기값 하나를 지정해 줌
+      if (!mdContent.markid) {
+        setMdContent((prevState) => ({
+          ...prevState,
+          markid: markidCandidate[0],
+        }));
+      }
     } catch (error) {
       console.error(error.response.data);
     }
@@ -123,20 +123,20 @@ export function MarkdownInput(props) {
   }
 
   // Validator
-  function markidVal(e) {
-    e.preventDefault();
-    const key = e.target.id;
-    const value = e.target.value;
+  // function markidVal(e) {
+  //   e.preventDefault();
+  //   const key = e.target.id;
+  //   const value = e.target.value;
 
-    let error = "";
-    if (!/\d+/.test(value)) {
-      error = "번호를 선택하여 주세요.";
-    }
-    setMdValError((prevState) => ({
-      ...prevState,
-      [key]: error,
-    }));
-  }
+  //   let error = "";
+  //   if (!/\d+/.test(value)) {
+  //     error = "번호를 선택하여 주세요.";
+  //   }
+  //   setMdValError((prevState) => ({
+  //     ...prevState,
+  //     [key]: error,
+  //   }));
+  // }
 
   function textVal(e, wordLimit) {
     e.preventDefault();
@@ -148,14 +148,13 @@ export function MarkdownInput(props) {
     } else if (value.length >= wordLimit) {
       error = `${wordLimit}자 이하로 입력하여 주세요.`;
     }
-
     setMdValError((prevState) => ({
       ...prevState,
       [key]: error,
     }));
   }
   return (
-    <div className="editor-body editor-vline">
+    <div className="editor-body editor-vline mb-5">
       {/* <h1 className="mb-3 text-success">[마크다운 에디터]</h1> */}
       <div className="my-3 row">
         <div className="col-md-2 mb-3">
@@ -167,13 +166,9 @@ export function MarkdownInput(props) {
             aria-label="MarkID"
             onFocus={getMarkIds}
             onChange={onTextChange}
-            onBlur={markidVal}
+            // onBlur={markidVal}
           >
-            {origMarkid ? (
-              <option value={origMarkid}>{origMarkid}</option>
-            ) : (
-              <option>번호</option>
-            )}
+            {origMarkid && <option value={origMarkid}>{origMarkid}</option>}
             {markids &&
               markids.map((value, key) => {
                 return (
@@ -227,32 +222,6 @@ export function MarkdownInput(props) {
       <div id="invalidTitle" className="invalid-feedback">
         {mdError.content ? mdError.content : ""}
         {mdValError.content ? mdValError.content : ""}
-      </div>
-      <div className="mt-5">
-        <div className="d-flex align-items-center justify-content-center">
-          <button
-            className="btn btn-steelblue mx-2"
-            onClick={() => props.Action(mdContent)}
-            disabled={
-              !/\d+/.test(mdContent.markid) ||
-              !mdContent.title ||
-              !mdContent.content ||
-              mdValError.markid ||
-              mdValError.title ||
-              mdValError.content
-                ? true
-                : false
-            }
-          >
-            저장
-          </button>
-          <button
-            className="btn btn-slategray mx-2"
-            onClick={() => navigate(-1)}
-          >
-            취소
-          </button>
-        </div>
       </div>
     </div>
   );
