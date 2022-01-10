@@ -49,7 +49,7 @@ export default function MarkdownCreator(props) {
   return (
     <div className="row">
       <nav className="navbar navbar-mp navbar-light fixed-bottom">
-        <div className="container justify-content-end">
+        <div className="container justify-content-center">
           <h1 className="navbar-brand d-none d-md-block">
             작성 완료 후 저장 버튼을 눌러 주세요
           </h1>

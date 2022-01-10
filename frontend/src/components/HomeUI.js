@@ -198,7 +198,7 @@ function HomeUI() {
                 <div className="d-grid mx-auto">
                   <button
                     to="/instruction"
-                    className="btn btn-cadetblue col-12 col-md-6 mx-auto"
+                    className="btn btn-rosybrown col-12 col-md-6 mx-auto"
                     type="button"
                     onClick={updateDataStatus}
                   >

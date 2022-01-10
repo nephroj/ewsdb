@@ -80,7 +80,7 @@ function Simulator() {
   return (
     <div className="container py-3">
       <div className="row">
-        <div className="card col-11 col-lg-6 my-4 py-4 mx-auto">
+        <div className="card col-11 col-lg-6 my-5 py-2 mx-auto">
           <div className="card-body text-center">
             {simStatus.is_active ? (
               <h2>
