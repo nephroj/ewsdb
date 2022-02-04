@@ -136,8 +136,6 @@ venv.bak/
 ## add
 **/migrations/*
 !**/migrations/__init__.py
-static/*
-!static/blank.txt
 
 django.env
 db
