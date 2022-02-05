@@ -134,7 +134,7 @@ function HomeUI() {
     <div className="container">
       <section className="pt-5 pb-4 text-center">
         <div className="row py-lg-4">
-          <div className="col-lg-6 col-md-8 mx-auto">
+          <div className="col-xl-6 col-lg-8 col-md-10 mx-auto">
             <h1 className="fw-light">입원 데이터 시뮬레이션</h1>
             <p className="lead text-muted">
               데이터베이스에 입원 데이터가 실시간으로 생성되도록 하는
@@ -145,14 +145,14 @@ function HomeUI() {
             <p>
               <Link
                 to="/simulator"
-                className="btn btn-steelblue btn-lg col-10 col-lg-4 mt-2 mx-2"
+                className="btn btn-steelblue btn-lg col-10 col-md-6 col-lg-4 mt-2 mx-2"
                 type="button"
               >
                 시뮬레이터로 이동
               </Link>
               <Link
                 to="/instruction/1"
-                className="btn btn-slategray btn-lg col-10 col-lg-4 mt-2"
+                className="btn btn-slategray btn-lg col-10 col-md-6 col-lg-4 mt-2"
                 type="button"
               >
                 설명서로 이동

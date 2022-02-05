@@ -17,7 +17,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: web
-    command: gunicorn aaadir.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn ewsdb.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./backend:/usr/src/app
       - ./static:/usr/src/static
