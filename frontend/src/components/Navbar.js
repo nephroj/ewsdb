@@ -14,7 +14,11 @@ function Navbar() {
       {isAuth && (
         <nav className="navbar navbar-expand-md navbar-dark sticky-top bg-dark">
           <div className="container">
-            <Link to="/" className="nav-link">
+            <Link
+              to="/"
+              className="nav-link"
+              onClick={() => setIsNavCollapsed(true)}
+            >
               <div className="navbar-brand">
                 <img
                   src={logo}
@@ -49,17 +53,29 @@ function Navbar() {
                   </Link>
                 </li> */}
                 <li className="nav-item">
-                  <Link to="/instruction/1" className="nav-link">
+                  <Link
+                    to="/instruction/1"
+                    className="nav-link"
+                    onClick={() => setIsNavCollapsed(true)}
+                  >
                     설명서
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/simulator" className="nav-link">
+                  <Link
+                    to="/simulator"
+                    className="nav-link"
+                    onClick={() => setIsNavCollapsed(true)}
+                  >
                     시뮬레이터
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/logout" className="nav-link">
+                  <Link
+                    to="/logout"
+                    className="nav-link"
+                    onClick={() => setIsNavCollapsed(true)}
+                  >
                     로그아웃
                   </Link>
                 </li>
