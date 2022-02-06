@@ -90,15 +90,17 @@ def stack_data(speed, from_prev=1):
         print("---------------")
         is_active = SimStats.objects.get(id=1).is_active
         if is_active:
-            sim_duration = (unit_end_time-sim_start_time).seconds
-            sim_data_duration = (unit_data_last_time-sim_data_start_time).seconds
+            sim_duration_org = unit_end_time-sim_start_time
+            sim_duration = sim_duration_org.days*24 + sim_duration_org.seconds/60
+            sim_data_duration_org = unit_data_last_time-sim_data_start_time
+            sim_data_duration = sim_data_duration_org.days*24 + sim_data_duration_org.seconds/60
             sim_speed = sim_data_duration/sim_duration
             update_list = {
                 "avg_save_time": round(sec/n, 3),
                 "sim_data_last_time": unit_data_start_time.replace(microsecond=0),  
                 "sim_last_time": unit_end_time.replace(microsecond=0),
-                "sim_data_duration": math.floor(sim_data_duration/60),
-                "sim_duration": math.floor(sim_duration/60),    
+                "sim_data_duration": math.floor(sim_data_duration),
+                "sim_duration": math.floor(sim_duration),    
                 "sim_speed": round(sim_speed), 
                 "sim_hosp_n": data_n[0],
                 "sim_vital_n": data_n[1],
