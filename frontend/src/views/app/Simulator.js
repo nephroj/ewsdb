@@ -1,10 +1,19 @@
 import React, { Fragment, useEffect, useState } from "react";
 import axios from "axios";
+import { timeFormatting } from "../../Store";
 
 function Simulator() {
   const [simStatus, setSimStatus] = useState({});
   const [simLoading, setSimLoading] = useState(false);
-  const [simSpeed, setSimSpeed] = useState(10);
+  const initialSimSpeed = 100;
+  const initialSpeedSetting = {
+    maxSpeed: 400,
+    speedAdjust: 3,
+  };
+  const [simSpeed, setSimSpeed] = useState(initialSimSpeed);
+  const [speedSet, setSpeedSet] = useState(initialSpeedSetting);
+  const [speedTemp, setSpeedTemp] = useState(initialSpeedSetting);
+  const [speedSetOpen, setSpeedSetOpen] = useState(false);
 
   useEffect(() => {
     getSimStatus();
@@ -36,7 +45,7 @@ function Simulator() {
   async function onStart(e) {
     e.preventDefault();
     setSimLoading(true);
-    const simSpeedSetting = Math.round(Math.pow(simSpeed, 2)) * 3;
+    const simSpeedSetting = simSpeed * speedSet.speedAdjust;
     try {
       const res = await axios({
         method: "post",
@@ -77,6 +86,17 @@ function Simulator() {
     }
   }
 
+  function onSpeedSetChange(e) {
+    e.preventDefault();
+    let key = e.target.id;
+    let value = e.target.value;
+
+    setSpeedTemp((prevState) => ({
+      ...prevState,
+      [key]: value,
+    }));
+  }
+
   return (
     <div className="container py-3">
       <div className="row">
@@ -97,14 +117,82 @@ function Simulator() {
       <div className="row mt-4 d-flex justify-content-center">
         <div className="col-lg-4 mx-4 px-4 py-4">
           <label htmlFor="Range400" className="form-label">
-            데이터 진행 속도: {Math.round(Math.pow(simSpeed, 2))}배속 (추정)
+            <b>데이터 진행 속도:</b> 약 {simSpeed}배속{" "}
+            <span
+              type="button"
+              className="badge bg-secondary"
+              onClick={() => {
+                setSpeedSetOpen(!speedSetOpen);
+                setSpeedTemp(speedSet);
+              }}
+            >
+              {speedSetOpen ? "설정 닫기" : "설정 열기"}
+            </span>
           </label>
+          {speedSetOpen && (
+            <div className="card mb-3">
+              <div className="card-body">
+                <form className="g-3">
+                  <div className="mb-2 row">
+                    <label className="col-5 col-form-label">최대 속도</label>
+                    <div className="col-7">
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="maxSpeed"
+                        value={speedTemp.maxSpeed}
+                        onChange={onSpeedSetChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-2 row">
+                    <label className="col-5 col-form-label">속도 조정값</label>
+                    <div className="col-7">
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="speedAdjust"
+                        value={speedTemp.speedAdjust}
+                        onChange={onSpeedSetChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-center">
+                    <button
+                      type="button"
+                      className="btn btn-steelblue mx-2"
+                      onClick={() => {
+                        setSpeedSet(speedTemp);
+                        if (parseInt(simSpeed) > parseInt(speedTemp.maxSpeed)) {
+                          setSimSpeed(speedTemp.maxSpeed);
+                        }
+                      }}
+                    >
+                      수정하기
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-slategray"
+                      onClick={() => {
+                        setSimSpeed(initialSimSpeed);
+                        setSpeedTemp(initialSpeedSetting);
+                        setSpeedSet(initialSpeedSetting);
+                      }}
+                    >
+                      초기화
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
           <input
             type="range"
             className="form-range"
             min="1"
-            max="20"
-            step="0.25"
+            max={speedSet.maxSpeed}
+            step="1"
             id="Range400"
             value={simSpeed}
             onChange={(e) => setSimSpeed(e.target.value)}
@@ -115,7 +203,7 @@ function Simulator() {
               <small> ×1</small>
             </div>
             <div className="col-6 text-right">
-              <small>×400</small>
+              <small>×{speedSet.maxSpeed}</small>
             </div>
           </div>
           <div className="d-flex justify-content-center mx-auto mt-5">
@@ -161,7 +249,10 @@ function Simulator() {
               </tr>
               <tr>
                 <th scope="row">실행 시간</th>
-                <td>{!simLoading && simStatus.sim_duration}분</td>
+                <td>
+                  {!simLoading &&
+                    timeFormatting(parseInt(simStatus.sim_duration))}
+                </td>
               </tr>
               <tr>
                 <th scope="row">데이터 상 시작 시각</th>
@@ -174,7 +265,10 @@ function Simulator() {
               </tr>
               <tr>
                 <th scope="row">데이터 상 경과 시간</th>
-                <td>{!simLoading && simStatus.sim_data_duration}분</td>
+                <td>
+                  {!simLoading &&
+                    timeFormatting(parseInt(simStatus.sim_data_duration))}
+                </td>
               </tr>
               <tr>
                 <th scope="row">데이터 1회 생성 시간</th>

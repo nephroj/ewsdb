@@ -148,14 +148,14 @@ function HomeUI() {
                 className="btn btn-steelblue btn-lg col-10 col-md-6 col-lg-4 mt-2 mx-2"
                 type="button"
               >
-                시뮬레이터로 이동
+                시뮬레이터
               </Link>
               <Link
                 to="/instruction/1"
                 className="btn btn-slategray btn-lg col-10 col-md-6 col-lg-4 mt-2"
                 type="button"
               >
-                설명서로 이동
+                설명서
               </Link>
             </p>
           </div>
