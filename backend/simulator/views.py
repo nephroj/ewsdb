@@ -10,7 +10,7 @@ import time
 import math
 
 from prevdata.models import HospInfo, Vital, Lab
-from .models import HospInfoSim, VitalSim, LabSim, SimStats
+from .models import HospInfoSim, VitalSim, LabSim, SimStatus, SimSettings
 from .serializers import (
     HospInfoSimSerializer,
     VitalSimSerializer, LabSimSerializer
@@ -19,7 +19,7 @@ from ewsdb.utils import status_update, status_get, get_first_time, get_last_time
 
 
 # Simulator main function
-def stack_data(speed, from_prev=1):
+def stack_data(speed, start_date, start_radio):
 
     # 사용될 models
     PREV_MODELS = [HospInfo, Vital, Lab]
@@ -34,15 +34,15 @@ def stack_data(speed, from_prev=1):
         SimModel.truncate()
 
     # 이전 종료된 value_datetime 시각(sim_data_last_time)부터 시작할 지 확인
-    if from_prev:
-        sim_data_last_time = status_get(SimStats, "sim_data_last_time", first_time)
-        sim_data_start_time = sim_data_last_time
-    else:
-        sim_data_start_time = first_time    
-
+    # if from_prev:
+    #     sim_data_last_time = status_get(SimStatus, "sim_data_last_time", first_time)
+    #     sim_data_start_time = sim_data_last_time
+    # else:
+    #     sim_data_start_time = first_time    
+    sim_data_start_time = datetime.strptime(start_date, "%Y-%m-%d")
     sim_start_time = timezone.now().replace(microsecond=0)
 
-    # 시작 전 SimStats를 초기화하고 시작
+    # 시작 전 SimStatus를 초기화하고 시작
     update_list = {
         "avg_save_time": 0,
         "sim_start_time": sim_start_time,
@@ -51,22 +51,31 @@ def stack_data(speed, from_prev=1):
         "sim_data_last_time": sim_data_start_time,  
         "sim_data_duration": 0,
         "sim_duration": 0,    
-        "sim_speed": 0, 
+        "sim_speed": 0,
         "sim_hosp_n": 0,
         "sim_vital_n": 0,
-        "sim_lab_n": 0,        
+        "sim_lab_n": 0,    
     }    
-    status_update(SimStats, update_list)
+    status_update(SimStatus, update_list)
+
+    # 시작 전 SimSetting update하기
+    update_list = {
+        "sim_speed": speed, 
+        "sim_start_date": sim_data_start_time,
+        "sim_start_radio": start_radio
+    }   
+    status_update(SimSettings, update_list)
 
     # 현재 simulation 시행 상태 확인 - simulation은 하나만 시행되어야 함
-    is_active = SimStats.objects.get(id=1).is_active 
+    is_active = SimStatus.objects.get(id=1).is_active 
 
-    # 외부에서 SimStats의 is_active를 0으로 변경시키면 종료됨
+    # 외부에서 SimStatus의 is_active를 0으로 변경시키면 종료됨
     n = 0
     sec = 0
     data_n = [0, 0, 0]
     unit_data_start_time = sim_data_start_time
-    unit_data_last_time = unit_data_start_time + timedelta(seconds=speed) 
+    avg_save_time_prev = status_get(SimStatus, "avg_save_time", 3)
+    unit_data_last_time = unit_data_start_time + timedelta(seconds=speed*avg_save_time_prev) 
        
     while is_active and unit_data_start_time <= last_time:
         unit_start_time = timezone.now()  
@@ -80,15 +89,19 @@ def stack_data(speed, from_prev=1):
             data_n[i] += len(new_dicts)  
 
         unit_data_start_time = unit_data_last_time
-        unit_data_last_time = unit_data_start_time + timedelta(seconds=speed)
+        avg_save_time_prev = status_get(SimStatus, "avg_save_time", 3)
+        unit_data_last_time = unit_data_start_time + timedelta(seconds=speed*avg_save_time_prev)
         unit_end_time = timezone.now()
         time_spent = unit_end_time - unit_start_time
         time_spent = time_spent.seconds + time_spent.microseconds/1000000
         n += 1
         sec += time_spent
         print(unit_data_last_time, unit_n, f'{round(time_spent, 3)} | {round(sec/n, 3)}')
-        print("---------------")
-        is_active = SimStats.objects.get(id=1).is_active
+        
+        # 마지막 시간에 다다르면 is_active를 0으로 변화시킴
+        if unit_data_start_time >= last_time:   
+            status_update(SimStatus, {"is_active": 0})
+        is_active = SimStatus.objects.get(id=1).is_active 
         if is_active:
             sim_duration_org = unit_end_time-sim_start_time
             sim_duration = sim_duration_org.days*24*60 + sim_duration_org.seconds/60
@@ -106,7 +119,7 @@ def stack_data(speed, from_prev=1):
                 "sim_vital_n": data_n[1],
                 "sim_lab_n": data_n[2],      
             }
-            status_update(SimStats, update_list)
+            status_update(SimStatus, update_list)
  
 
 class SimulatorAPI(APIView):
@@ -115,22 +128,23 @@ class SimulatorAPI(APIView):
 
     def post(self, request):
         operation = request.data["operation"]
-        is_active_value = status_get(SimStats, "is_active", 0)
+        is_active_value = status_get(SimStatus, "is_active", 0)
 
         if operation == "start":
             speed = request.data["speed"]
-            from_prev = request.data["from_prev"]
-            proc = Thread(target=stack_data, args=(speed, from_prev)) 
+            start_date = request.data["start_date"]
+            start_radio = request.data["start_radio"]
+            proc = Thread(target=stack_data, args=(speed, start_date, start_radio)) 
             if int(is_active_value):
                 result_text = "이미 simulation 시행 중입니다."
             else:
-                status_update(SimStats, {"is_active": 1})
+                status_update(SimStatus, {"is_active": 1})
                 proc.start()
                 result_text = "simulation이 시작되었습니다."
 
         elif operation == "stop": 
             if int(is_active_value):      
-                status_update(SimStats, {"is_active": 0})
+                status_update(SimStatus, {"is_active": 0})
                 result_text = "simulation이 중단되었습니다."
             else:
                 result_text = "시행 중인 simulation이 없습니다."
@@ -145,7 +159,15 @@ class SimStatusAPIView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, format=None):
-        items = SimStats.objects.filter(id=1).values()[0]
+        items = SimStatus.objects.filter(id=1).values()[0]
+        return Response(items)
+
+class SimSettingsAPIView(APIView):
+    authentication_classes = (TokenAuthentication, BasicAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, format=None):
+        items = SimSettings.objects.filter(id=1).values()[0]
         return Response(items)
 
 class HospInfoSimViewSet(viewsets.ReadOnlyModelViewSet):

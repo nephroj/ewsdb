@@ -1,20 +1,24 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { timeFormatting } from "../../Store";
+import { timeFormatting, make_date, slice_date } from "../../Store";
 
 function Simulator() {
   const [simStatus, setSimStatus] = useState({});
+  // const [simSettings, setSimSettings] = useState({});
+  const [dataStatus, setDataStatus] = useState({});
   const [simLoading, setSimLoading] = useState(false);
-  const initialSimSpeed = 100;
-  const initialSpeedSetting = {
-    maxSpeed: 400,
-    speedAdjust: 3,
-  };
-  const [simSpeed, setSimSpeed] = useState(initialSimSpeed);
-  const [speedSet, setSpeedSet] = useState(initialSpeedSetting);
-  const [speedTemp, setSpeedTemp] = useState(initialSpeedSetting);
-  const [speedSetOpen, setSpeedSetOpen] = useState(false);
+  const [simSpeed, setSimSpeed] = useState(100);
+  const [startRadio, setStartRadio] = useState("start_manual");
+  const [startDate, setStartDate] = useState("");
+  const [startDateMan, setStartDateMan] = useState("");
 
+  // 페이지 첫 로드 시
+  useEffect(() => {
+    getDataStatus();
+    getSimSettings();
+  }, []);
+
+  // 시뮬레이션 시작 혹은 중단 시 or 페이지 첫 로드 시
   useEffect(() => {
     getSimStatus();
 
@@ -26,6 +30,27 @@ function Simulator() {
     }
   }, [simStatus.is_active]);
 
+  // SimSettings 불러오기
+  async function getSimSettings() {
+    try {
+      const res = await axios({
+        method: "get",
+        url: "/api/simsettings/",
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      });
+      const results = res.data;
+      setStartDateMan(results.sim_start_date);
+      setSimSpeed(results.sim_speed);
+      setStartDate(results.sim_start_date);
+      setStartRadio(results.sim_start_radio);
+    } catch (err) {
+      console.log(err.response.data.detail);
+    }
+  }
+
+  // SimStatus 불러오기
   async function getSimStatus() {
     try {
       const res = await axios({
@@ -42,18 +67,36 @@ function Simulator() {
     }
   }
 
+  // 풀링된 데이터 현황 불러오기
+  async function getDataStatus() {
+    try {
+      const res = await axios({
+        method: "get",
+        url: "/api/datainfo/",
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      });
+      const results = res.data;
+      setDataStatus(results);
+    } catch (err) {
+      console.log(err.response.data.detail);
+    }
+  }
+
   async function onStart(e) {
     e.preventDefault();
     setSimLoading(true);
-    const simSpeedSetting = simSpeed * speedSet.speedAdjust;
+
     try {
       const res = await axios({
         method: "post",
         url: "/api/simulator/",
         data: {
           operation: "start",
-          speed: simSpeedSetting,
-          from_prev: 1,
+          speed: parseInt(simSpeed),
+          start_date: startDate,
+          start_radio: startRadio,
         },
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
@@ -86,19 +129,30 @@ function Simulator() {
     }
   }
 
-  function onSpeedSetChange(e) {
-    e.preventDefault();
-    let key = e.target.id;
-    let value = e.target.value;
+  function getStartDate(e) {
+    const start_radio = e.target.value;
+    let start_date = "";
+    setStartRadio(start_radio);
 
-    setSpeedTemp((prevState) => ({
-      ...prevState,
-      [key]: value,
-    }));
+    if (start_radio === "start_orig") {
+      start_date = make_date(dataStatus.adm_date_min, "-");
+    } else if (start_radio === "start_prev") {
+      start_date = slice_date(simStatus.sim_data_last_time);
+    } else {
+      start_date = startDateMan;
+    }
+    setStartDate(start_date);
+  }
+
+  function manualStartDate(e) {
+    const manual_date = e.target.value;
+    setStartDate(manual_date);
+    setStartDateMan(manual_date);
   }
 
   return (
     <div className="container py-3">
+      {/* 시뮬레이션 실행 상태 */}
       <div className="row">
         <div className="card col-11 col-lg-6 my-5 py-2 mx-auto">
           <div className="card-body text-center">
@@ -114,99 +168,100 @@ function Simulator() {
           </div>
         </div>
       </div>
+
+      {/* 시뮬레이션 시작 시점 */}
       <div className="row mt-4 d-flex justify-content-center">
         <div className="col-lg-4 mx-4 px-4 py-4">
-          <label htmlFor="Range400" className="form-label">
-            <b>데이터 진행 속도:</b> 약 {simSpeed}배속{" "}
-            <span
-              type="button"
-              className="badge bg-secondary"
-              onClick={() => {
-                setSpeedSetOpen(!speedSetOpen);
-                setSpeedTemp(speedSet);
+          <div className="mb-5">
+            <div className="mb-2">
+              <b>시뮬레이션 시작 시점: </b> {startDate}
+            </div>
+            <div className="form-check mb-1 mx-2">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="start_orig"
+                value="start_orig"
+                checked={startRadio === "start_orig"}
+                onChange={getStartDate}
+                disabled={simStatus.is_active}
+              />
+              <label className="form-check-label">처음부터</label>
+            </div>
+            <div className="form-check mb-1 mx-2">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="start_prev"
+                value="start_prev"
+                checked={startRadio === "start_prev"}
+                onChange={getStartDate}
+                disabled={simStatus.is_active}
+              />
+              <label className="form-check-label">이전 종료 날짜</label>
+            </div>
+            <div className="form-check mx-2 mb-1">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="start_manual"
+                value="start_manual"
+                checked={startRadio === "start_manual"}
+                onChange={getStartDate}
+                disabled={simStatus.is_active}
+              />
+              <label className="form-check-label">사용자 지정</label>
+            </div>
+            {startRadio === "start_manual" && (
+              <div className="mb-3 mx-3 row">
+                <div className="col-xl-9">
+                  <input
+                    type="date"
+                    className="form-control"
+                    id="manual_date"
+                    value={startDateMan}
+                    min={make_date(dataStatus.adm_date_min, "-")}
+                    max={make_date(dataStatus.adm_date_max, "-")}
+                    disabled={simStatus.is_active}
+                    onChange={manualStartDate}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 데이터 진행속도 */}
+          <div className="mb-5">
+            <label htmlFor="Range400" className="form-label">
+              <b>데이터 진행 속도:</b> 약 {simSpeed}배속
+            </label>
+
+            <input
+              type="range"
+              className="form-range"
+              min="0"
+              max="400"
+              step="10"
+              id="Range400"
+              value={simSpeed}
+              onChange={(e) => {
+                const speedTemp = e.target.value === "0" ? 1 : e.target.value;
+                setSimSpeed(speedTemp);
               }}
-            >
-              {speedSetOpen ? "설정 닫기" : "설정 열기"}
-            </span>
-          </label>
-          {speedSetOpen && (
-            <div className="card mb-3">
-              <div className="card-body">
-                <form className="g-3">
-                  <div className="mb-2 row">
-                    <label className="col-5 col-form-label">최대 속도</label>
-                    <div className="col-7">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="maxSpeed"
-                        value={speedTemp.maxSpeed}
-                        onChange={onSpeedSetChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-2 row">
-                    <label className="col-5 col-form-label">속도 조정값</label>
-                    <div className="col-7">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="speedAdjust"
-                        value={speedTemp.speedAdjust}
-                        onChange={onSpeedSetChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-center">
-                    <button
-                      type="button"
-                      className="btn btn-steelblue mx-2"
-                      onClick={() => {
-                        setSpeedSet(speedTemp);
-                        if (parseInt(simSpeed) > parseInt(speedTemp.maxSpeed)) {
-                          setSimSpeed(speedTemp.maxSpeed);
-                        }
-                      }}
-                    >
-                      수정하기
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-slategray"
-                      onClick={() => {
-                        setSimSpeed(initialSimSpeed);
-                        setSpeedTemp(initialSpeedSetting);
-                        setSpeedSet(initialSpeedSetting);
-                      }}
-                    >
-                      초기화
-                    </button>
-                  </div>
-                </form>
+              disabled={simStatus.is_active}
+            />
+            <div className="row">
+              <div className="col-6 text-left">
+                <small> ×1</small>
+              </div>
+              <div className="col-6 text-right">
+                <small>×400</small>
               </div>
             </div>
-          )}
-
-          <input
-            type="range"
-            className="form-range"
-            min="1"
-            max={speedSet.maxSpeed}
-            step="1"
-            id="Range400"
-            value={simSpeed}
-            onChange={(e) => setSimSpeed(e.target.value)}
-            disabled={simStatus.is_active}
-          />
-          <div className="row">
-            <div className="col-6 text-left">
-              <small> ×1</small>
-            </div>
-            <div className="col-6 text-right">
-              <small>×{speedSet.maxSpeed}</small>
-            </div>
           </div>
-          <div className="d-flex justify-content-center mx-auto mt-5">
+
+          {/* 시작 버튼 */}
+          <div className="d-flex justify-content-center mx-auto">
             {simStatus.is_active ? (
               <input
                 type="button"
@@ -226,10 +281,13 @@ function Simulator() {
                     onStart(e);
                 }}
                 value="시작"
+                disabled={!startDate}
               />
             )}
           </div>
         </div>
+
+        {/* 시뮬레이터 현황판 */}
         <div className="col-lg-6">
           <table className="table table-bordered">
             <thead>

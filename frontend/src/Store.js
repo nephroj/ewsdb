@@ -50,3 +50,37 @@ export function timeFormatting(time) {
 
   return time_text;
 }
+
+export function make_comma(number) {
+  if (!number) {
+    return number;
+  } else if (typeof number == "number") {
+    const text = number.toLocaleString("en-US");
+    return text;
+  } else {
+    return number;
+  }
+}
+export function make_date(date, sep = "/") {
+  if (date) {
+    const date_text = String(date);
+    const text =
+      date_text.substring(0, 4) +
+      sep +
+      date_text.substring(4, 6) +
+      sep +
+      date_text.substring(6, 8);
+    return text;
+  } else {
+    return date;
+  }
+}
+export function slice_date(date) {
+  if (date) {
+    const date_text = String(date);
+    const text = date_text.slice(0, 10);
+    return text;
+  } else {
+    return date;
+  }
+}

@@ -57,7 +57,7 @@ export default function MarkdownViewer(props) {
             <div className="row">
               <div className="list-group col-12 px-4">
                 <li className="list-group-item list-group-item-action title d-flex justify-content-between">
-                  <div>설명서 목차</div>
+                  <div>목차</div>
                   <button
                     className="btn btn-seagreen btn-sm"
                     onClick={() => navigate("/instruction/create")}

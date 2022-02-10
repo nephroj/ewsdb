@@ -1,20 +1,29 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { useRecoilState } from "recoil";
-import { updateLoadingAtom } from "../Store";
+import { updateLoadingAtom, make_comma, make_date } from "../Store";
 
 function HomeUI() {
   const [simStatus, setSimStatus] = useState({});
   const [dataStatus, setDataStatus] = useState({});
   const [updateLoading, setUpdateLoading1] = useRecoilState(updateLoadingAtom);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    getSimStatus();
     getDataStatus();
   }, [updateLoading]);
 
+  useEffect(() => {
+    getSimStatus();
+    if (simStatus.is_active) {
+      const interval = setInterval(() => {
+        getSimStatus();
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [simStatus.is_active]);
+
+  // Simuation 현황 불러오기
   async function getSimStatus() {
     try {
       const res = await axios({
@@ -31,6 +40,7 @@ function HomeUI() {
     }
   }
 
+  // 풀링된 데이터 현황 불러오기
   async function getDataStatus() {
     try {
       const res = await axios({
@@ -47,6 +57,7 @@ function HomeUI() {
     }
   }
 
+  // 정보 업데이트 클릭 시 풀링된 데이터 현황 업데이트
   async function updateDataStatus() {
     try {
       setUpdateLoading1(true);
@@ -66,73 +77,9 @@ function HomeUI() {
     }
   }
 
-  async function onStart(e) {
-    e.preventDefault();
-    try {
-      const res = await axios({
-        method: "post",
-        url: "/api/simulator/",
-        data: {
-          operation: "start",
-          speed: 300,
-          from_prev: 1,
-        },
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      });
-      console.log(res.data);
-      navigate("/simulator");
-    } catch (err) {
-      console.log(err.response.data.detail);
-    }
-  }
-
-  async function onStop(e) {
-    e.preventDefault();
-    try {
-      const res = await axios({
-        method: "post",
-        url: "/api/simulator/",
-        data: {
-          operation: "stop",
-        },
-      });
-      console.log(res.data);
-      navigate("/simulator");
-    } catch (err) {
-      console.log(err.response.data.detail);
-    }
-  }
-
-  function make_comma(number) {
-    if (!number) {
-      return number;
-    } else if (typeof number == "number") {
-      const text = number.toLocaleString("en-US");
-      return text;
-    } else {
-      return number;
-    }
-  }
-  function make_date(date, sep = "/") {
-    if (date) {
-      const date_text = String(date);
-      const text =
-        date_text.substring(0, 4) +
-        sep +
-        date_text.substring(4, 6) +
-        sep +
-        date_text.substring(6, 8);
-      return text;
-    } else {
-      return date;
-    }
-  }
-
   return (
     <div className="container">
-      <section className="pt-5 pb-4 text-center">
+      <section className="pt-5 pb-3 text-center">
         <div className="row py-lg-4">
           <div className="col-xl-6 col-lg-8 col-md-10 mx-auto">
             <h1 className="fw-light">입원 데이터 시뮬레이션</h1>
@@ -142,32 +89,16 @@ function HomeUI() {
               모델을 실제로 적용해 볼 수 있도록 가능한 현실과 비슷한 상황을
               가정하고 구현하였습니다.
             </p>
-            <p>
-              <Link
-                to="/simulator"
-                className="btn btn-steelblue btn-lg col-10 col-md-6 col-lg-4 mt-2 mx-2"
-                type="button"
-              >
-                시뮬레이터
-              </Link>
-              <Link
-                to="/instruction/1"
-                className="btn btn-slategray btn-lg col-10 col-md-6 col-lg-4 mt-2"
-                type="button"
-              >
-                설명서
-              </Link>
-            </p>
           </div>
         </div>
       </section>
       <hr className="col-4 col-md-2 mb-5 mx-auto" />
 
       <div className="row g-5 py-md-4 col-lg-9 mx-auto">
-        <div className="col-lg-6">
+        <div className="col-xl-6">
           <div className="card">
             <div className="card-body px-4 py-4">
-              <h3 className="text-center">풀링 데이터 정보</h3>
+              <h3 className="text-center mb-3">풀링 데이터 정보</h3>
               <p className="text-center">
                 실시간 데이터를 생성하기 위해 미리 저장시켜 놓은 풀링
                 데이터입니다. 전산과에서 제공받은 데이터가 거의 가공 없이 저장된
@@ -210,10 +141,10 @@ function HomeUI() {
           </div>
         </div>
 
-        <div className="col-lg-6">
+        <div className="col-xl-6">
           <div className="card">
             <div className="card-body px-4 py-4">
-              <h3 className="text-center">시뮬레이터 현황</h3>
+              <h3 className="text-center mb-3">시뮬레이터 현황</h3>
               <p className="text-center">
                 시뮬레이터의 작동 상황과 요약 정보입니다. 작동 중이 아닐 때는
                 이전 정보가 표시됩니다. 추가 설정은 시뮬레이터 화면에서 확인하여
@@ -238,27 +169,13 @@ function HomeUI() {
               </ul>
 
               <div className="d-grid">
-                {simStatus.is_active ? (
-                  <input
-                    type="button"
-                    className="btn btn-slategray col-12 col-lg-6 mx-auto"
-                    onClick={(e) => {
-                      if (window.confirm("시뮬레이션을 중단하시겠습니까?"))
-                        onStop(e);
-                    }}
-                    value="중지"
-                  />
-                ) : (
-                  <input
-                    type="button"
-                    className="btn btn-seagreen col-12 col-lg-6 mx-auto"
-                    onClick={(e) => {
-                      if (window.confirm("시뮬레이션을 시작하시겠습니까?"))
-                        onStart(e);
-                    }}
-                    value="시작 (100배속)"
-                  />
-                )}
+                <Link
+                  to="/simulator"
+                  type="button"
+                  className="btn btn-seagreen col-12 col-md-6 mx-auto"
+                >
+                  시뮬레이터로 이동
+                </Link>
               </div>
             </div>
           </div>

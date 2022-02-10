@@ -49,7 +49,7 @@ class LabSim(models.Model):
             cursor.execute(f'TRUNCATE TABLE {cls._meta.db_table}')
 
 
-class SimStats(models.Model):
+class SimStatus(models.Model):
     is_active            = models.IntegerField(blank=True)
     sim_start_time       = models.DateTimeField(blank=True)
     sim_last_time        = models.DateTimeField(blank=True)
@@ -68,3 +68,12 @@ class SimStats(models.Model):
         with connection.cursor() as cursor:
             cursor.execute(f'TRUNCATE TABLE {cls._meta.db_table}')    
 
+class SimSettings(models.Model):
+    sim_speed        = models.IntegerField(blank=True)
+    sim_start_date   = models.DateField(blank=True)   
+    sim_start_radio  = models.CharField(max_length=20, blank=True)
+
+    @classmethod
+    def truncate(cls):
+        with connection.cursor() as cursor:
+            cursor.execute(f'TRUNCATE TABLE {cls._meta.db_table}') 
