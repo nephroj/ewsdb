@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Avg, Max, Min
 from django.forms.models import model_to_dict
+import psutil
+from datetime import datetime
 
 from .serializers import *
 from .models import HospInfo, Vital, Lab, DataStatus
@@ -105,3 +107,39 @@ class DataInfoAPIView(APIView):
                 return Response("업데이트에 실패하였습니다.")
         else:
             return Response("정확한 명령을 전달해 주세요.")
+
+
+    
+class HWInfoAPIView(APIView):
+    authentication_classes = (TokenAuthentication, BasicAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_hardware_info(self):
+        def get_size(bytes, suffix="B"):
+            factor = 1024
+            for unit in ["", "K", "M", "G", "T", "P"]:
+                if bytes < factor:
+                    return f"{bytes:.1f} {unit}{suffix}"
+                bytes /= factor
+
+        cpufreq = psutil.cpu_freq()
+        svmem = psutil.virtual_memory()
+        partition = psutil.disk_partitions()[0]
+        partition_usage = psutil.disk_usage(partition.mountpoint)
+
+        hardware_info = {
+            "cpu_cores": str(psutil.cpu_count(logical=False)), 
+            "cpu_threads": str(psutil.cpu_count(logical=True)), 
+            "cpu_current_freq": f"{cpufreq.current:.0f} Mhz",
+            "cpu_usage": f"{psutil.cpu_percent()}%",
+            "ram_total": get_size(svmem.total),
+            "ram_used": f"{get_size(svmem.used)} ({svmem.percent}%)",
+            "disk_fstype": partition.fstype,
+            "disk_total": get_size(partition_usage.total),
+            "disk_used": f"{get_size(partition_usage.used)} ({partition_usage.percent}%)",
+        }
+        return(hardware_info)
+    
+    def get(self, request, format=None):
+        hardware_info = self.get_hardware_info()
+        return Response(hardware_info)
