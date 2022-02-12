@@ -84,3 +84,11 @@ export function slice_date(date) {
     return date;
   }
 }
+export function to_fixed(num, n) {
+  if (num) {
+    const fixed_num = num.toFixed(n);
+    return fixed_num;
+  } else {
+    return num;
+  }
+}

@@ -2,7 +2,12 @@ import React, { useEffect, useState, Fragment } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useRecoilState } from "recoil";
-import { updateLoadingAtom, make_comma, make_date } from "../Store";
+import {
+  updateLoadingAtom,
+  make_comma,
+  make_date,
+  timeFormatting,
+} from "../Store";
 
 function HomeUI() {
   const [simStatus, setSimStatus] = useState({});
@@ -160,7 +165,9 @@ function HomeUI() {
                   )}
                 </li>
                 <li>실행 시작 시각: {simStatus.sim_start_time}</li>
-                <li>실행 시간: {simStatus.sim_duration}분</li>
+                <li>
+                  실행 시간: {timeFormatting(parseInt(simStatus.sim_duration))}
+                </li>
                 <li>실제 실행 속도: {simStatus.sim_speed}배속</li>
                 <li>
                   Hosp {simStatus.sim_hosp_n} | Vital {simStatus.sim_vital_n} |

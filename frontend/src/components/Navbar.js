@@ -53,29 +53,22 @@ function Navbar() {
                   </Link>
                 </li> */}
                 <li className="nav-item">
-                  <Link
-                    to="/instruction/1"
-                    className="nav-link"
-                    onClick={() => setIsNavCollapsed(true)}
-                  >
+                  <Link to="/instruction/1" className="nav-link">
                     설명서
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link
-                    to="/simulator"
-                    className="nav-link"
-                    onClick={() => setIsNavCollapsed(true)}
-                  >
+                  <Link to="/simulator" className="nav-link">
                     시뮬레이터
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link
-                    to="/logout"
-                    className="nav-link"
-                    onClick={() => setIsNavCollapsed(true)}
-                  >
+                  <Link to="/serverinfo" className="nav-link">
+                    서버모니터링
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/logout" className="nav-link">
                     로그아웃
                   </Link>
                 </li>

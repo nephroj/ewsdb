@@ -110,7 +110,7 @@ class DataInfoAPIView(APIView):
 
 
     
-class HWInfoAPIView(APIView):
+class ServerInfoAPIView(APIView):
     authentication_classes = (TokenAuthentication, BasicAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -126,17 +126,28 @@ class HWInfoAPIView(APIView):
         svmem = psutil.virtual_memory()
         partition = psutil.disk_partitions()[0]
         partition_usage = psutil.disk_usage(partition.mountpoint)
+        disk_io = psutil.disk_io_counters()
 
         hardware_info = {
-            "cpu_cores": str(psutil.cpu_count(logical=False)), 
-            "cpu_threads": str(psutil.cpu_count(logical=True)), 
-            "cpu_current_freq": f"{cpufreq.current:.0f} Mhz",
-            "cpu_usage": f"{psutil.cpu_percent()}%",
-            "ram_total": get_size(svmem.total),
-            "ram_used": f"{get_size(svmem.used)} ({svmem.percent}%)",
+            "cpu_cores": psutil.cpu_count(logical=False), 
+            "cpu_threads": psutil.cpu_count(logical=True), 
+            "cpu_min_freq": cpufreq.min,
+            "cpu_max_freq": cpufreq.max,
+            "cpu_current_freq": cpufreq.current,
+            "cpu_usage": psutil.cpu_percent(),
+            "ram_total": svmem.total / 1024**3,
+            "ram_used": svmem.used /1024**3,
+            "ram_available": svmem.available /1024**3,
+            "ram_used_perc": svmem.percent,
+            "disk_device": partition.device,
+            "disk_mountpoint": partition.mountpoint,
             "disk_fstype": partition.fstype,
-            "disk_total": get_size(partition_usage.total),
-            "disk_used": f"{get_size(partition_usage.used)} ({partition_usage.percent}%)",
+            "disk_total": partition_usage.total /1024**3,
+            "disk_used": partition_usage.used /1024**3,
+            "disk_available": partition_usage.free /1024**3,
+            "disk_used_perc": partition_usage.percent,
+            "disk_io_read": disk_io.read_bytes /1024**3,
+            "disk_io_write": disk_io.write_bytes /1024**3
         }
         return(hardware_info)
     

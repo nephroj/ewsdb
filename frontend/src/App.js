@@ -13,6 +13,7 @@ import Logout from "./views/auth/Logout";
 import Login from "./views/auth/Login";
 import Simulator from "./views/app/Simulator";
 import Instruction from "./views/app/Instruction";
+import ServerInfo from "./views/app/ServerInfo";
 
 function App() {
   const [isAuth, setIsAuth] = useRecoilState(isAuthAtom);
@@ -61,6 +62,7 @@ function App() {
               <Route index element={<HomeUI />} />
               <Route path="instruction/*" element={<Instruction />} />
               <Route path="simulator" element={<Simulator />} />
+              <Route path="serverinfo" element={<ServerInfo />} />
               <Route path="logout" element={<Logout />} />
             </Route>
           ) : (
