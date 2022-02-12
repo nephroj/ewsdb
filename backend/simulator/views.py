@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from threading import Thread
 import time
 import math
+import logging
+logger = logging.getLogger("simulator")
 
 from prevdata.models import HospInfo, Vital, Lab
 from .models import HospInfoSim, VitalSim, LabSim, SimStatus, SimSettings
@@ -15,7 +17,7 @@ from .serializers import (
     HospInfoSimSerializer,
     VitalSimSerializer, LabSimSerializer
 )
-from ewsdb.utils import status_update, status_get, get_first_time, get_last_time
+from ewsdb.utils import status_update, status_get, get_first_time, get_last_time, get_client_ip
 
 
 # Simulator main function
@@ -136,20 +138,25 @@ class SimulatorAPI(APIView):
             start_radio = request.data["start_radio"]
             proc = Thread(target=stack_data, args=(speed, start_date, start_radio)) 
             if int(is_active_value):
-                result_text = "이미 simulation 시행 중입니다."
+                result_text = "Already simulator is running"
+                logger.warning(f'{request.user} | {get_client_ip(request)} | {result_text}')
             else:
                 status_update(SimStatus, {"is_active": 1})
                 proc.start()
-                result_text = "simulation이 시작되었습니다."
+                result_text = "Simulator started"
+                logger.info(f'{request.user} | {get_client_ip(request)} | {result_text} | x{speed} | {start_date}')
 
         elif operation == "stop": 
             if int(is_active_value):      
                 status_update(SimStatus, {"is_active": 0})
-                result_text = "simulation이 중단되었습니다."
+                result_text = "Simulator stopped"
+                logger.info(f'{request.user} | {get_client_ip(request)} | {result_text}')
             else:
-                result_text = "시행 중인 simulation이 없습니다."
+                result_text = "Simulator is not running"
+                logger.warning(f'{request.user} | {get_client_ip(request)} | {result_text}')
         else:
-            result_text = "명령 전달 실패"
+            result_text = "Fail to deliver the command"
+            logger.error(f'{request.user} | {get_client_ip(request)} | {result_text}')
         return Response(result_text)
 
 

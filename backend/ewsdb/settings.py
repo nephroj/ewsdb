@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 import environ
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -180,3 +181,85 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',  
     'http://localhost:8000',  
 )
+
+
+## Logging
+FILE_SIMULATOR = os.path.join(BASE_DIR, 'log/simulator.log')
+FILE_EWSDB = os.path.join(BASE_DIR, 'log/ewsdb.log')
+FILE_ERROR = os.path.join(BASE_DIR, 'log/error.log')
+ 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+
+    'formatters': {
+        'verbose': {
+            'format': "%(asctime)s (%(levelname)s) %(message)s",
+            'datefmt': "%Y-%m-%d %H:%M:%S",
+            # 'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            # 'datefmt': "%d/%b/%Y %H:%M:%S"
+        },
+    },
+ 
+    'handlers': {
+        # 개발 환경에서 console 출력
+        'console': {
+            'level': 'INFO',
+            'formatter': 'verbose',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        },
+        # Error or Warning 상황은 error.log 파일에 기록
+        'file_error': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': FILE_ERROR,
+            'formatter': 'verbose',
+            'maxBytes': 1024 * 1024 * 10,
+            'backupCount': 5,
+        },
+        # web 전반적인 log 기록
+        'file_ewsdb': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': FILE_EWSDB,
+            'formatter': 'verbose',
+            'maxBytes': 1024 * 1024 * 10,
+            'backupCount': 5,
+        },
+        # Simulator 작동은 simulator.log에 기록
+        'file_simulator': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': FILE_SIMULATOR,
+            'formatter': 'verbose',
+            'maxBytes': 1024 * 1024 * 10,
+            'backupCount': 5,
+        },
+    },
+ 
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file_error'],
+            'propagate': False,
+        },
+        'simulator': {
+            'handlers': ['file_simulator'],
+            'propagate': False,
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+        },   
+        'ewsdb': {
+            'handlers': ['file_ewsdb'],
+            'propagate': False,
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+        },   
+    }
+}

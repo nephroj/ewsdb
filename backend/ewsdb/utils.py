@@ -4,6 +4,15 @@ from django.db.models import Min, Max
 from prevdata.models import HospInfo
 
 
+# ip 확인하는 function
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[-1].strip()
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+    
 # 입원 데이터 상 첫 날짜 골라내기
 def get_first_time():
     adm_date_min_int = HospInfo.objects.all().aggregate(Min("adm_date"))["adm_date__min"]
@@ -55,7 +64,6 @@ def status_get(Model, key, initial):
         status_update(Model, {key: initial})
         value = initial
     return value
-
 
 
 # # SimStatus에 key, value 값을 update - 이 전에 없었으면 새로 생성

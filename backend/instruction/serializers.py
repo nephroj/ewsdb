@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import serializers
+import logging
+logger = logging.getLogger("ewsdb")
 
 from .models import Instruction
 
@@ -36,6 +38,7 @@ class InstructionDetailSerializer(serializers.ModelSerializer):
             'updated',
             'timestamp',
         ]
+    
 
 class InstructionListSerializer(serializers.ModelSerializer):
     url     = serializers.HyperlinkedIdentityField(
