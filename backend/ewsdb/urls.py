@@ -5,6 +5,7 @@ from django.views.generic import TemplateView
 from rest_framework import routers
 from prevdata.views import *
 from simulator.views import *
+from .views import *
 
 router = routers.DefaultRouter()
 router.register('hospinfo', HospInfoViewSet, basename='hospinfo')
@@ -26,6 +27,7 @@ urlpatterns = [
     path('api/datainfo/', DataInfoAPIView.as_view(), name="datainfo"),   
     path('api/serverinfo/', ServerInfoAPIView.as_view(), name="serverinfo"),
     path('api/simlog/', SimLogAPIView.as_view(), name="simlog"),
+    path("api/setlogging/", SetLoggingAPIView.as_view(), name="setlogging"),
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/instruction/', include('instruction.urls')),
 

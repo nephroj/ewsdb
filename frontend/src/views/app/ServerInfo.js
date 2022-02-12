@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { to_fixed } from "../../Store";
+import { navMenuAtom } from "../../Store";
+import { to_fixed, setLogging } from "../../Utils";
+import { useSetRecoilState } from "recoil";
 
 function ServerInfo() {
   const [serverData, setServerData] = useState({});
   const [simLog, setSimLog] = useState([]);
+  const setNavMenu = useSetRecoilState(navMenuAtom);
 
   // 페이지 첫 로드 시
   useEffect(() => {
+    setLogging("INFO", "ServerInfo");
+    setNavMenu("serverinfo");
     getServerInfo();
     getSimLog();
 
@@ -46,7 +51,7 @@ function ServerInfo() {
         },
       });
       const results = res.data;
-      setSimLog(results.slice(0, 10));
+      setSimLog(results);
     } catch (err) {
       console.log(err.response);
     }
@@ -190,13 +195,13 @@ function ServerInfo() {
               Simulator Log
             </h5>
             <div className="card-body">
-              <h5 className="card-title">최근 작동 기록 (10개)</h5>
-              <ul>
+              <h5 className="card-title">최근 작동 기록 (최대 20개)</h5>
+              <ol>
                 {simLog &&
                   simLog.map((value, index) => {
                     return <li key={index}>{value}</li>;
                   })}
-              </ul>
+              </ol>
             </div>
           </div>
         </div>

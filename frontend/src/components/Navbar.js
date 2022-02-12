@@ -1,47 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { isAuthAtom } from "../Store";
+import { isAuthAtom, navMenuAtom } from "../Store";
 
 import logo from "../logo.svg";
 
 function Navbar() {
   const isAuth = useRecoilValue(isAuthAtom);
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
-  const [currentUrl, setCurrentUrl] = useState("");
-  const [menu, setMenu] = useState("");
-
-  useEffect(() => {
-    getUrl();
-    getCurrentURL();
-  }, [currentUrl]);
-
-  function getUrl() {
-    const url = window.location.href;
-    setCurrentUrl(url);
-  }
-
-  function getCurrentURL() {
-    if (currentUrl) {
-      if (currentUrl.includes("instruction")) {
-        setMenu("instruction");
-      } else if (currentUrl.includes("simulator")) {
-        setMenu("simulator");
-      } else if (currentUrl.includes("serverinfo")) {
-        setMenu("serverinfo");
-      } else if (currentUrl.includes("logout")) {
-        setMenu("logout");
-      } else {
-        setMenu("");
-      }
-    }
-  }
+  const navMenu = useRecoilValue(navMenuAtom);
 
   return (
     <React.Fragment>
       {isAuth && (
         <nav className="navbar navbar-expand-md navbar-dark sticky-top bg-dark">
-          <div className="container" onClick={getUrl}>
+          <div className="container">
             <Link
               to="/"
               className="nav-link"
@@ -83,7 +56,9 @@ function Navbar() {
                 <li className="nav-item">
                   <Link
                     to="/instruction/1"
-                    className={`nav-link ${menu === "instruction" && "active"}`}
+                    className={`nav-link ${
+                      navMenu === "instruction" && "active"
+                    }`}
                   >
                     설명서
                   </Link>
@@ -91,7 +66,9 @@ function Navbar() {
                 <li className="nav-item">
                   <Link
                     to="/simulator"
-                    className={`nav-link ${menu === "simulator" && "active"}`}
+                    className={`nav-link ${
+                      navMenu === "simulator" && "active"
+                    }`}
                   >
                     시뮬레이터
                   </Link>
@@ -99,7 +76,9 @@ function Navbar() {
                 <li className="nav-item">
                   <Link
                     to="/serverinfo"
-                    className={`nav-link ${menu === "serverinfo" && "active"}`}
+                    className={`nav-link ${
+                      navMenu === "serverinfo" && "active"
+                    }`}
                   >
                     서버모니터링
                   </Link>
@@ -107,7 +86,7 @@ function Navbar() {
                 <li className="nav-item">
                   <Link
                     to="/logout"
-                    className={`nav-link ${menu === "logout" && "active"}`}
+                    className={`nav-link ${navMenu === "logout" && "active"}`}
                   >
                     로그아웃
                   </Link>

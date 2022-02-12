@@ -225,6 +225,7 @@ LOGGING = {
             'formatter': 'verbose',
             'maxBytes': 1024 * 1024 * 10,
             'backupCount': 5,
+            'encoding': 'utf-8',
         },
         # web 전반적인 log 기록
         'file_ewsdb': {
@@ -234,6 +235,7 @@ LOGGING = {
             'formatter': 'verbose',
             'maxBytes': 1024 * 1024 * 10,
             'backupCount': 5,
+            'encoding': 'utf-8',
         },
         # Simulator 작동은 simulator.log에 기록
         'file_simulator': {
@@ -243,6 +245,7 @@ LOGGING = {
             'formatter': 'verbose',
             'maxBytes': 1024 * 1024 * 10,
             'backupCount': 5,
+            'encoding': 'utf-8',
         },
     },
  

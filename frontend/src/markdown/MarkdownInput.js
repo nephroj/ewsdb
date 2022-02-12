@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useRecoilState, useResetRecoilState } from "recoil";
 import axios from "axios";
 import { mdContentAtom, mdErrorAtom, mdValErrorAtom } from "../Store";
 
 export function MarkdownInput(props) {
-  const navigate = useNavigate();
   const [mdContent, setMdContent] = useRecoilState(mdContentAtom);
   const [mdError, setMdError] = useRecoilState(mdErrorAtom);
   const [mdValError, setMdValError] = useRecoilState(mdValErrorAtom);
@@ -121,22 +119,6 @@ export function MarkdownInput(props) {
       [key]: "",
     }));
   }
-
-  // Validator
-  // function markidVal(e) {
-  //   e.preventDefault();
-  //   const key = e.target.id;
-  //   const value = e.target.value;
-
-  //   let error = "";
-  //   if (!/\d+/.test(value)) {
-  //     error = "번호를 선택하여 주세요.";
-  //   }
-  //   setMdValError((prevState) => ({
-  //     ...prevState,
-  //     [key]: error,
-  //   }));
-  // }
 
   function textVal(e, wordLimit) {
     e.preventDefault();

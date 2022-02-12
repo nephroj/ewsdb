@@ -1,20 +1,19 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useRecoilState } from "recoil";
-import {
-  updateLoadingAtom,
-  make_comma,
-  make_date,
-  timeFormatting,
-} from "../Store";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { navMenuAtom, updateLoadingAtom } from "../Store";
+import { make_comma, make_date, timeFormatting, setLogging } from "../Utils";
 
 function HomeUI() {
   const [simStatus, setSimStatus] = useState({});
   const [dataStatus, setDataStatus] = useState({});
   const [updateLoading, setUpdateLoading1] = useRecoilState(updateLoadingAtom);
+  const setNavMenu = useSetRecoilState(navMenuAtom);
 
   useEffect(() => {
+    setLogging("INFO", "Home");
+    setNavMenu("home");
     getDataStatus();
   }, [updateLoading]);
 
@@ -75,6 +74,7 @@ function HomeUI() {
         data: { action: "update" },
       });
       const results = res.data;
+      setLogging("INFO", "Update DataStatus");
       setUpdateLoading1(false);
     } catch (err) {
       console.log(err.response.data);

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { isAuthAtom } from "../../Store";
+import { setLogging } from "../../Utils";
 
 function Login() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ function Login() {
       localStorage.clear();
       localStorage.setItem("token", res.data.key);
       setIsAuth(true);
+      setLogging("INFO", "Logged In");
       navigate("/");
     } catch (err) {
       setUsername("");

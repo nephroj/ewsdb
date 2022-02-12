@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -6,6 +6,7 @@ import axios from "axios";
 import { MarkdownInput } from "./MarkdownInput";
 import { MarkdownResult } from "./MarkdownResult";
 import { mdContentAtom, mdErrorAtom, mdValErrorAtom } from "../Store";
+import { setLogging } from "../Utils";
 import "./markdown-editor.css";
 
 export default function MarkdownCreator(props) {
@@ -32,7 +33,13 @@ export default function MarkdownCreator(props) {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
       });
-      console.log(response.data);
+      // logging
+      let log_text = isCreate ? "Create: " : "Update: ";
+      log_text = log_text + mdContent.markid + ". " + mdContent.title;
+      console.log(log_text);
+      setLogging("INFO", log_text);
+
+      // move to markdown viewer
       navigate(`/instruction/${mdContent.markid}`);
     } catch (error) {
       console.log(error.response.data);

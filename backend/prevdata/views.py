@@ -5,7 +5,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Max, Min
 from django.forms.models import model_to_dict
-import psutil
 
 from .serializers import *
 from .models import HospInfo, Vital, Lab, DataStatus
@@ -82,63 +81,3 @@ class DataInfoAPIView(APIView):
         else:
             return Response("정확한 명령을 전달해 주세요.")
 
-    
-class ServerInfoAPIView(APIView):
-    authentication_classes = (TokenAuthentication, BasicAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_hardware_info(self):
-        def get_size(bytes, suffix="B"):
-            factor = 1024
-            for unit in ["", "K", "M", "G", "T", "P"]:
-                if bytes < factor:
-                    return f"{bytes:.1f} {unit}{suffix}"
-                bytes /= factor
-
-        cpufreq = psutil.cpu_freq()
-        svmem = psutil.virtual_memory()
-        partition = psutil.disk_partitions()[0]
-        partition_usage = psutil.disk_usage(partition.mountpoint)
-        disk_io = psutil.disk_io_counters()
-
-        hardware_info = {
-            "cpu_cores": psutil.cpu_count(logical=False), 
-            "cpu_threads": psutil.cpu_count(logical=True), 
-            "cpu_min_freq": cpufreq.min,
-            "cpu_max_freq": cpufreq.max,
-            "cpu_current_freq": cpufreq.current,
-            "cpu_usage": psutil.cpu_percent(),
-            "ram_total": svmem.total / 1024**3,
-            "ram_used": svmem.used /1024**3,
-            "ram_available": svmem.available /1024**3,
-            "ram_used_perc": svmem.percent,
-            "disk_device": partition.device,
-            "disk_mountpoint": partition.mountpoint,
-            "disk_fstype": partition.fstype,
-            "disk_total": partition_usage.total /1024**3,
-            "disk_used": partition_usage.used /1024**3,
-            "disk_available": partition_usage.free /1024**3,
-            "disk_used_perc": partition_usage.percent,
-            "disk_io_read": disk_io.read_bytes /1024**3,
-            "disk_io_write": disk_io.write_bytes /1024**3
-        }
-        return(hardware_info)
-    
-    def get(self, request, format=None):
-        hardware_info = self.get_hardware_info()
-        return Response(hardware_info)
-
-
-class SimLogAPIView(APIView):
-    authentication_classes = (TokenAuthentication, BasicAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_sim_log(self):
-        f = open("log/simulator.log", "r")
-        texts = f.readlines()
-        sim_log = {n: text for n, text in enumerate(texts)}
-        return(texts)
-    
-    def get(self, request, format=None):
-        sim_log = self.get_sim_log()
-        return Response(sim_log)    

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { timeFormatting, make_date, slice_date } from "../../Store";
+import { useSetRecoilState } from "recoil";
+import { navMenuAtom } from "../../Store";
+import { timeFormatting, make_date, slice_date, setLogging } from "../../Utils";
 
 function Simulator() {
   const [simStatus, setSimStatus] = useState({});
@@ -11,9 +13,12 @@ function Simulator() {
   const [startRadio, setStartRadio] = useState("start_manual");
   const [startDate, setStartDate] = useState("");
   const [startDateMan, setStartDateMan] = useState("");
+  const setNavMenu = useSetRecoilState(navMenuAtom);
 
   // 페이지 첫 로드 시
   useEffect(() => {
+    setLogging("INFO", "Simulator");
+    setNavMenu("simulator");
     getDataStatus();
     getSimSettings();
   }, []);
@@ -108,6 +113,10 @@ function Simulator() {
         is_active: "1",
       }));
       setTimeout(() => setSimLoading(false), 3000);
+      setLogging(
+        "INFO",
+        "Simulation started | x" + simSpeed + " | " + startDate
+      );
     } catch (err) {
       console.log(err.response.data.detail);
     }
@@ -124,6 +133,7 @@ function Simulator() {
         },
       });
       console.log(res.data);
+      setLogging("INFO", "Simulation stopped");
     } catch (err) {
       console.log(err.response.data.detail);
     }
@@ -260,7 +270,7 @@ function Simulator() {
           </div>
 
           {/* 시작 버튼 */}
-          <div className="d-flex justify-content-center mx-auto">
+          <div className="d-flex justify-content-center mx-auto mb-5">
             {simStatus.is_active ? (
               <input
                 type="button"

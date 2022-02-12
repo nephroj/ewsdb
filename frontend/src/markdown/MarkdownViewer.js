@@ -5,6 +5,7 @@ import axios from "axios";
 import { useRecoilState } from "recoil";
 
 import { mdContentAtom } from "../Store";
+import { setLogging } from "../Utils";
 import "./markdown-editor.css";
 
 export default function MarkdownViewer(props) {
@@ -44,6 +45,7 @@ export default function MarkdownViewer(props) {
         title: response.data.title,
         content: response.data.content,
       });
+      setLogging("INFO", "Instruction: " + markid);
     } catch (error) {
       console.error(error);
     }
@@ -53,7 +55,7 @@ export default function MarkdownViewer(props) {
     <div className="container py-3">
       {markdownList && (
         <div className="row my-2">
-          <div className="col-md-3 my-3">
+          <div className="col-lg-3 my-3">
             <div className="row">
               <div className="list-group col-12 px-4">
                 <li className="list-group-item list-group-item-action title d-flex justify-content-between">
@@ -82,7 +84,7 @@ export default function MarkdownViewer(props) {
               </div>
             </div>
           </div>
-          <div className="markdown-body col-md-9 my-3">
+          <div className="markdown-body col-lg-9 my-3">
             <div className="title-style mb-3 px-lg-4">
               {mdContent.markid} |&ensp; {mdContent.title}
               <button

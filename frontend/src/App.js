@@ -6,6 +6,7 @@ import { useRecoilState } from "recoil";
 
 import "./App.css";
 import { isAuthAtom } from "./Store";
+import { setLogging } from "./Utils";
 import Navbar from "./components/Navbar";
 
 import HomeUI from "./components/HomeUI";
@@ -38,6 +39,7 @@ function App() {
       })
         .then((res) => res.json())
         .then((data) => {
+          setLogging("INFO", "Logged Out (Auto)");
           localStorage.clear();
           setIsAuth(false);
           window.location.replace("/");
