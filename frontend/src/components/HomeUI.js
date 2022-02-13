@@ -2,14 +2,19 @@ import React, { useEffect, useState, Fragment } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { navMenuAtom, updateLoadingAtom } from "../Store";
+import {
+  navMenuAtom,
+  simStatusAtom,
+  updateLoadingAtom,
+  dataStatusAtom,
+} from "../Store";
 import { make_comma, make_date, timeFormatting, setLogging } from "../Utils";
 
 function HomeUI() {
-  const [simStatus, setSimStatus] = useState({});
-  const [dataStatus, setDataStatus] = useState({});
   const [updateLoading, setUpdateLoading1] = useRecoilState(updateLoadingAtom);
   const setNavMenu = useSetRecoilState(navMenuAtom);
+  const [simStatus, setSimStatus] = useRecoilState(simStatusAtom);
+  const [dataStatus, setDataStatus] = useRecoilState(dataStatusAtom);
 
   useEffect(() => {
     setLogging("INFO", "Home");
@@ -161,7 +166,7 @@ function HomeUI() {
                   {simStatus.is_active ? (
                     <b className="text-success">● 실행 중</b>
                   ) : (
-                    <b className="text-danger">● 중지 상태</b>
+                    <b className="text-danger">● 중지됨</b>
                   )}
                 </li>
                 <li>실행 시작 시각: {simStatus.sim_start_time}</li>

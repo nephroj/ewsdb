@@ -7,6 +7,7 @@ import { useSetRecoilState } from "recoil";
 function ServerInfo() {
   const [serverData, setServerData] = useState({});
   const [simLog, setSimLog] = useState([]);
+  const [errorLog, setErrorLog] = useState([]);
   const setNavMenu = useSetRecoilState(navMenuAtom);
 
   // 페이지 첫 로드 시
@@ -45,13 +46,14 @@ function ServerInfo() {
     try {
       const res = await axios({
         method: "get",
-        url: "/api/simlog/",
+        url: "/api/viewlog/",
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
       });
       const results = res.data;
-      setSimLog(results);
+      setSimLog(results.sim_log);
+      setErrorLog(results.error_log);
     } catch (err) {
       console.log(err.response);
     }
@@ -178,27 +180,52 @@ function ServerInfo() {
         </div>
       </div>
       <div className="row">
-        <div className="col-lg-8 mt-lg-4">
+        <div className="col-12 mt-lg-4">
           <div className="card">
             <h5 className="card-header">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
                 fill="currentColor"
-                className="bi bi-file-earmark-binary"
+                className="bi bi-file-earmark-text"
                 viewBox="0 0 16 16"
               >
-                <path d="M7.05 11.885c0 1.415-.548 2.206-1.524 2.206C4.548 14.09 4 13.3 4 11.885c0-1.412.548-2.203 1.526-2.203.976 0 1.524.79 1.524 2.203zm-1.524-1.612c-.542 0-.832.563-.832 1.612 0 .088.003.173.006.252l1.559-1.143c-.126-.474-.375-.72-.733-.72zm-.732 2.508c.126.472.372.718.732.718.54 0 .83-.563.83-1.614 0-.085-.003-.17-.006-.25l-1.556 1.146zm6.061.624V14h-3v-.595h1.181V10.5h-.05l-1.136.747v-.688l1.19-.786h.69v3.633h1.125z" />
-                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z" />
+                <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
               </svg>{" "}
               Simulator Log
             </h5>
             <div className="card-body">
-              <h5 className="card-title">최근 작동 기록 (최대 20개)</h5>
-              <ol>
+              <h5 className="card-title">작동 기록 (최근 20개)</h5>
+              <ol className="text-monospace">
                 {simLog &&
                   simLog.map((value, index) => {
+                    return <li key={index}>{value}</li>;
+                  })}
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div className="col-12 mt-lg-4 mb-5">
+          <div className="card">
+            <h5 className="card-header">
+              <svg
+                width="24"
+                height="24"
+                fill="currentColor"
+                className="bi bi-file-earmark-x"
+                viewBox="0 0 16 16"
+              >
+                <path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+              </svg>{" "}
+              Error Log
+            </h5>
+            <div className="card-body">
+              <h5 className="card-title">에러 기록 (최근 20개)</h5>
+              <ol className="text-monospace">
+                {errorLog &&
+                  errorLog.map((value, index) => {
                     return <li key={index}>{value}</li>;
                   })}
               </ol>

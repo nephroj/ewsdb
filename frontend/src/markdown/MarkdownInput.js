@@ -93,7 +93,6 @@ export function MarkdownInput(props) {
         txt + parseInt(getTextWidth(txt1) / ((offsetWidth - 10) * 0.6)),
       0
     );
-    // console.log(nRows, nAddrows, offsetWidth);
     const nTotalrows = nRows + nAddrows;
     setOffsetHeight(
       nTotalrows > 8 ? nTotalrows * 26 + 150 : textareaDefaultHeight

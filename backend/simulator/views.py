@@ -144,7 +144,7 @@ class SimulatorAPI(APIView):
                 status_update(SimStatus, {"is_active": 1})
                 proc.start()
                 result_text = "Simulator started"
-                logger.info(f'{request.user} | {get_client_ip(request)} | {result_text} | x{speed} | {start_date}')
+                logger.info(f'{request.user} | {get_client_ip(request)} | {result_text} | {start_date} | x{speed}')
 
         elif operation == "stop": 
             if int(is_active_value):      

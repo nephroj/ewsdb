@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useSetRecoilState } from "recoil";
-import { navMenuAtom } from "../../Store";
+import { useSetRecoilState, useRecoilState } from "recoil";
+import { navMenuAtom, simStatusAtom } from "../../Store";
 import { timeFormatting, make_date, slice_date, setLogging } from "../../Utils";
 
 function Simulator() {
-  const [simStatus, setSimStatus] = useState({});
-  // const [simSettings, setSimSettings] = useState({});
+  // const [simStatus, setSimStatus] = useState({});
   const [dataStatus, setDataStatus] = useState({});
   const [simLoading, setSimLoading] = useState(false);
   const [simSpeed, setSimSpeed] = useState(100);
@@ -14,6 +13,7 @@ function Simulator() {
   const [startDate, setStartDate] = useState("");
   const [startDateMan, setStartDateMan] = useState("");
   const setNavMenu = useSetRecoilState(navMenuAtom);
+  const [simStatus, setSimStatus] = useRecoilState(simStatusAtom);
 
   // 페이지 첫 로드 시
   useEffect(() => {
@@ -115,7 +115,7 @@ function Simulator() {
       setTimeout(() => setSimLoading(false), 3000);
       setLogging(
         "INFO",
-        "Simulation started | x" + simSpeed + " | " + startDate
+        "Simulation started | " + startDate + " | x" + simSpeed
       );
     } catch (err) {
       console.log(err.response.data.detail);
@@ -133,7 +133,13 @@ function Simulator() {
         },
       });
       console.log(res.data);
-      setLogging("INFO", "Simulation stopped");
+      setLogging(
+        "INFO",
+        "Simulation stopped | " +
+          slice_date(simStatus.sim_data_last_time) +
+          " | x" +
+          simSpeed
+      );
     } catch (err) {
       console.log(err.response.data.detail);
     }

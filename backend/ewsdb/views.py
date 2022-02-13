@@ -55,20 +55,32 @@ class ServerInfoAPIView(APIView):
         return Response(hardware_info)
 
 
-class SimLogAPIView(APIView):
+class ViewLogAPIView(APIView):
     authentication_classes = (TokenAuthentication, BasicAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_sim_log(self):
         f = open("log/simulator.log", "r")
         texts = f.readlines()
-        re_hide = "([(][A-Z]+[)])\s+(\w+)\s+[|]\s+(\d+[.]\d+[.]\d+[.]\d+)"
-        cleaned_texts = [re.sub(re_hide, "", text) for text in texts[::-1][0:20]]
+        def log_cleaner(text):            
+            re_clean = "\s+(\w+)\s+[|]\s+(\d+[.]\d+[.]\d+[.]\d+)\s+[|]"
+            cleaned = re.sub("\n", "", text)
+            cleaned = re.sub(re_clean, "", cleaned)
+            return(cleaned)
+        cleaned_texts = [log_cleaner(text) for text in texts][::-1][0:20]
+        return(cleaned_texts)        
+
+    def get_error_log(self):
+        f = open("log/error.log", "r")
+        texts = f.readlines()
+        start_with_date = re.compile("^\d{4}[-]\d{2}[-]\d{2}\s\d{2}[:]")
+        cleaned_texts = [re.sub("\n", "", text) for text in texts if bool(start_with_date.match(text))][::-1][0:20]
         return(cleaned_texts)
-    
+
     def get(self, request, format=None):
         sim_log = self.get_sim_log()
-        return Response(sim_log)    
+        error_log = self.get_error_log()
+        return Response({"sim_log":sim_log, "error_log": error_log})    
 
 
 class SetLoggingAPIView(APIView):

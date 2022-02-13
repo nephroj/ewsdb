@@ -11,6 +11,22 @@ export const navMenuAtom = atom({
   default: "",
 });
 
+export const simStatusAtom = atom({
+  key: "simStatusAtom",
+  default: {},
+});
+
+export const dataStatusAtom = atom({
+  key: "dataStatusAtom",
+  default: {},
+});
+
+export const updateLoadingAtom = atom({
+  key: "updateLoading1Atom",
+  default: false,
+});
+
+// Markdown 설정용
 export const mdContentAtom = atom({
   key: "mdContentAtom",
   default: {
@@ -34,9 +50,4 @@ export const mdValErrorAtom = atom({
     title: "",
     content: "",
   },
-});
-
-export const updateLoadingAtom = atom({
-  key: "updateLoading1Atom",
-  default: false,
 });

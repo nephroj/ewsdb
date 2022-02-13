@@ -36,7 +36,6 @@ export default function MarkdownCreator(props) {
       // logging
       let log_text = isCreate ? "Create: " : "Update: ";
       log_text = log_text + mdContent.markid + ". " + mdContent.title;
-      console.log(log_text);
       setLogging("INFO", log_text);
 
       // move to markdown viewer
