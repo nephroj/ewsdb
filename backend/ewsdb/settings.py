@@ -168,6 +168,7 @@ REST_FRAMEWORK = {
 
 ## CORS settings
 CSRF_TRUSTED_ORIGINS = [
+    env("CSRF_TRUSTED_ORIGINS"), 
     'http://localhost:8000/', 
     'http://localhost:3000/', 
     'http://localhost:8000', 
@@ -175,9 +176,10 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_URLS_REGEX = r'^/api.*'
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
+    env("CSRF_TRUSTED_ORIGINS"), 
     'http://localhost:3000',  
     'http://localhost:8000',  
 )

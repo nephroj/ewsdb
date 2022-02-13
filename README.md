@@ -1,27 +1,8 @@
-# Letsencrypt 인증서 발급 및 갱신
+# EWSDB 설치
 
-## 인증서 발급
+## NGINX 파일 작성
 
 도메인 이름이 "ews.example.com"이라고 가정함
-
-```
-sudo docker run -it --rm --name certbot \
-  -v '/etc/letsencrypt:/etc/letsencrypt' \
-  -v '/var/lib/letsencrypt:/var/lib/letsencrypt' \
-  certbot/certbot certonly \
-  -d 'ews.example.com' --manual --preferred-challenges dns \
-  --server https://acme-v02.api.letsencrypt.org/directory
-```
-
-## 인증서 갱신
-
-인증서 갱신을 위해 crontab에 갱신을 위한 script 추가함
-
-```
-28 15 * * 7 docker run -it --rm --name certbot -v '/etc/letsencrypt:/etc/letsencrypt' -v '/var/lib/letsencrypt:/var/lib/letsencrypt' certbot/certbot renew --manual --preferred-challenges dns --server https://acme-v02.api.letsencrypt.org/directory --noninteractive
-```
-
-# NGINX 파일 작성
 
 `nginx/nginx_443.conf`
 
@@ -66,7 +47,7 @@ server {
 }
 ```
 
-# django.env 파일 작성
+## django.env 파일 작성
 
 `backend/django.env`
 
@@ -87,7 +68,7 @@ MYSQL_HOST=mysql
 MYSQL_PORT=3306
 ```
 
-# Docker-compose
+## Docker-compose
 
 docker-compose 실행하여 최종적으로 서버 구동
 
@@ -95,4 +76,25 @@ docker-compose 실행하여 최종적으로 서버 구동
 docker-compose up --build -d
 ```
 
-# Logging 설정
+## 참고: Letsencrypt 인증서 발급 및 갱신
+
+### 인증서 발급
+
+도메인 이름이 "ews.example.com"이라고 가정함
+
+```
+sudo docker run -it --rm --name certbot \
+  -v '/etc/letsencrypt:/etc/letsencrypt' \
+  -v '/var/lib/letsencrypt:/var/lib/letsencrypt' \
+  certbot/certbot certonly \
+  -d 'ews.example.com' --manual --preferred-challenges dns \
+  --server https://acme-v02.api.letsencrypt.org/directory
+```
+
+### 인증서 갱신
+
+인증서 갱신을 위해 crontab에 갱신을 위한 script 추가함
+
+```
+28 15 * * 7 docker run -it --rm --name certbot -v '/etc/letsencrypt:/etc/letsencrypt' -v '/var/lib/letsencrypt:/var/lib/letsencrypt' certbot/certbot renew --manual --preferred-challenges dns --server https://acme-v02.api.letsencrypt.org/directory --noninteractive
+```
