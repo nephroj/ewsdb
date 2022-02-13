@@ -1,4 +1,5 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { isAuthAtom, navMenuAtom } from "../../Store";
@@ -14,25 +15,42 @@ function Logout(props) {
     setLogging("INFO", "Moved to Logout");
   }, []);
 
-  const handleLogout = async (e) => {
+  // const handleLogout = (e) => {
+  //   e.preventDefault();
+  //   setLogging("INFO", "Logged Out");
+
+  //   fetch("/api/auth/logout/", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Token ${localStorage.getItem("token")}`,
+  //     },
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       localStorage.clear();
+  //       setIsAuth(false);
+  //       navigate("/");
+  //     });
+  // };
+
+  async function handleLogout(e) {
     e.preventDefault();
-    setLogging("INFO", "Logged Out");
 
-    fetch("/api/auth/logout/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        localStorage.clear();
-        setIsAuth(false);
-        navigate("/");
+    try {
+      await setLogging("INFO", "Logged Out");
+      const res = await axios({
+        method: "post",
+        url: "/api/auth/logout/",
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
       });
-  };
-
+      localStorage.clear();
+      setIsAuth(false);
+      navigate("/");
+    } catch (err) {}
+  }
   return (
     <div className="container d-flex justify-content-center py-3 ">
       <div className="card col-lg-7 my-5">

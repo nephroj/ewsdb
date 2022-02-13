@@ -67,14 +67,15 @@ class ViewLogAPIView(APIView):
             cleaned = re.sub("\n", "", text)
             cleaned = re.sub(re_clean, "", cleaned)
             return(cleaned)
-        cleaned_texts = [log_cleaner(text) for text in texts][::-1][0:20]
+        cleaned_texts = [log_cleaner(text) for text in texts][-20:][::-1]
         return(cleaned_texts)        
 
     def get_error_log(self):
         f = open("log/error.log", "r")
         texts = f.readlines()
         start_with_date = re.compile("^\d{4}[-]\d{2}[-]\d{2}\s\d{2}[:]")
-        cleaned_texts = [re.sub("\n", "", text) for text in texts if bool(start_with_date.match(text))][::-1][0:20]
+        cleaned_texts = [re.sub("\n", "", text) for text in texts if bool(start_with_date.match(text))]
+        cleaned_texts = [text for text in cleaned_texts if "ERROR" in text or "CRITICAL" in text][-20:][::-1]   
         return(cleaned_texts)
 
     def get(self, request, format=None):

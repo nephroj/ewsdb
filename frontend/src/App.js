@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useIdleTimer } from "react-idle-timer";
 import { useRecoilState } from "recoil";
+import axios from "axios";
 
 import "./App.css";
 import { isAuthAtom } from "./Store";
@@ -28,28 +29,28 @@ function App() {
   }, []);
 
   // 특정시간동안 활동이 없으면 logout 시행
-  const handleOnIdle = (event) => {
+  async function handleOnIdle(e) {
     if (isAuth) {
-      fetch("/api/auth/logout/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setLogging("INFO", "Logged Out (Auto)");
-          localStorage.clear();
-          setIsAuth(false);
-          window.location.replace("/");
+      try {
+        await setLogging("INFO", "Logged Out (Auto)");
+        const res = await axios({
+          method: "post",
+          url: "/api/auth/logout/",
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
         });
-      const logoutTime = new Date(getLastActiveTime());
-      console.log("Last active time:", logoutTime);
+        localStorage.clear();
+        setIsAuth(false);
+        window.location.replace("/");
+        const logoutTime = new Date(getLastActiveTime());
+        console.log("Last active time:", logoutTime);
+      } catch (err) {}
     }
-  };
+  }
   const { getLastActiveTime } = useIdleTimer({
     timeout: 1000 * 60 * 20,
+    // timeout: 1000 * 30,
     onIdle: handleOnIdle,
     debounce: 500,
   });

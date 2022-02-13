@@ -19,7 +19,6 @@ function ServerInfo() {
 
     const interval = setInterval(() => {
       getServerInfo();
-      getSimLog();
     }, 3000);
     return () => clearInterval(interval);
   }, []);
