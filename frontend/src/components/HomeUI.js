@@ -17,7 +17,7 @@ function HomeUI() {
   const [dataStatus, setDataStatus] = useRecoilState(dataStatusAtom);
 
   useEffect(() => {
-    setLogging("INFO", "Home");
+    setLogging("INFO", "Moved to Home");
     setNavMenu("home");
     getDataStatus();
   }, [updateLoading]);

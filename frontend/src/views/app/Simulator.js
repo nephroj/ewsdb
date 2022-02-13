@@ -17,7 +17,7 @@ function Simulator() {
 
   // 페이지 첫 로드 시
   useEffect(() => {
-    setLogging("INFO", "Simulator");
+    setLogging("INFO", "Moved to Simulator");
     setNavMenu("simulator");
     getDataStatus();
     getSimSettings();

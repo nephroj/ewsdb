@@ -11,9 +11,10 @@ function Logout(props) {
 
   useEffect(() => {
     setNavMenu("logout");
+    setLogging("INFO", "Moved to Logout");
   }, []);
 
-  const handleLogout = (e) => {
+  const handleLogout = async (e) => {
     e.preventDefault();
     setLogging("INFO", "Logged Out");
 

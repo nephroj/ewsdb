@@ -12,7 +12,7 @@ function ServerInfo() {
 
   // 페이지 첫 로드 시
   useEffect(() => {
-    setLogging("INFO", "ServerInfo");
+    setLogging("INFO", "Moved to ServerInfo");
     setNavMenu("serverinfo");
     getServerInfo();
     getSimLog();

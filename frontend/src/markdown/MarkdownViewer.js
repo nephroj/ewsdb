@@ -45,7 +45,7 @@ export default function MarkdownViewer(props) {
         title: response.data.title,
         content: response.data.content,
       });
-      setLogging("INFO", "Instruction: " + markid);
+      setLogging("INFO", "Moved to Instruction: " + markid);
     } catch (error) {
       console.error(error);
     }

@@ -58,6 +58,7 @@ DEBUG=0
 SITE_ID=1
 HTTPS=1
 DJANGO_ALLOWED_HOSTS=ews.example.com
+CSRF_TRUSTED_ORIGINS=https://ews.example.com http://localhost:3000 http://localhost:8000
 
 # MYSQL
 MYSQL_DATABASE=ewsdb
