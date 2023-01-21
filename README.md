@@ -13,7 +13,9 @@ vim nginx/nginx_80.conf
 
 ## django.env 파일 작성
 
-`backend/django.env`
+```
+vim backend/django.env
+```
 
 ```
 DEV=0
@@ -35,10 +37,18 @@ MYSQL_PORT=3306
 
 ## Docker-compose
 
+docker-compose.yml 파일 수정
+
+example.com 부분을 실제 도메인 이름으로 바꿈
+
+```
+vim docker-compose.yml
+```
+
 docker-compose 실행하여 최종적으로 서버 구동
 
 ```
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 ## Letsencrypt 인증서 발급
