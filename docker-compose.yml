@@ -1,15 +1,17 @@
-version: "3"
+version: "3.8"
 services:
   nginx:
     image: nginx:latest
     container_name: nginx
+    restart: always
     ports:
       - "80:80/tcp"
       - "443:443/tcp"
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - ./static:/static
-      - /etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/cert:/etc/letsencrypt:ro
     depends_on:
       - web
   web:
@@ -17,6 +19,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: web
+    restart: always
     command: gunicorn ewsdb.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./backend:/usr/src/app
@@ -28,6 +31,7 @@ services:
   db:
     image: mariadb:latest
     container_name: mysql
+    restart: always
     ports:
       - "3306:3306/tcp"
     env_file:
@@ -35,3 +39,15 @@ services:
     volumes:
       - ./db/data:/var/lib/mysql
       - ./db/data/conf.d:/etc/mysql/conf.d
+  certbot:
+    container_name: certbot
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www:/var/www/certbot:rw
+      - ./certbot/cert:/etc/letsencrypt:rw
+    command: >-
+      certonly --reinstall --webroot --webroot-path=/var/www/certbot
+      --email mail@example.com --agree-tos --no-eff-email
+      -d example.com
+    depends_on:
+      - nginx
