@@ -11,11 +11,11 @@ import { setLogging } from "./Utils";
 import Navbar from "./components/Navbar";
 
 import HomeUI from "./components/HomeUI";
-import Logout from "./views/auth/Logout";
-import Login from "./views/auth/Login";
-import Simulator from "./views/app/Simulator";
-import Instruction from "./views/app/Instruction";
-import ServerInfo from "./views/app/ServerInfo";
+import Logout from "./auth/Logout";
+import Login from "./auth/Login";
+import Simulator from "./app/Simulator";
+import Instruction from "./app/Instruction";
+import ServerInfo from "./app/ServerInfo";
 
 function App() {
   const [isAuth, setIsAuth] = useRecoilState(isAuthAtom);

@@ -24,6 +24,9 @@ export default function MarkdownViewer(props) {
       const response = await axios({
         method: "get",
         url: `/api/instruction/list/`,
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
       });
 
       let mdList = response.data.results;
@@ -39,6 +42,9 @@ export default function MarkdownViewer(props) {
       const response = await axios({
         method: "get",
         url: `/api/instruction/list/${markid}/`,
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
       });
       setMdContent({
         markid: response.data.markid,

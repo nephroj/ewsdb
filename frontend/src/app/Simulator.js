@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSetRecoilState, useRecoilState } from "recoil";
-import { navMenuAtom, simStatusAtom } from "../../Store";
-import { timeFormatting, make_date, slice_date, setLogging } from "../../Utils";
+import { navMenuAtom, simStatusAtom, isAuthAtom } from "../Store";
+import {
+  timeFormatting,
+  make_date,
+  slice_date,
+  setLogging,
+  getAPIStatus,
+} from "../Utils";
 
 function Simulator() {
   // const [simStatus, setSimStatus] = useState({});
@@ -14,11 +20,13 @@ function Simulator() {
   const [startDateMan, setStartDateMan] = useState("");
   const setNavMenu = useSetRecoilState(navMenuAtom);
   const [simStatus, setSimStatus] = useRecoilState(simStatusAtom);
+  const setIsAuth = useSetRecoilState(isAuthAtom);
 
   // 페이지 첫 로드 시
   useEffect(() => {
     setLogging("INFO", "Moved to Simulator");
     setNavMenu("simulator");
+    getAPIStatus(setIsAuth);
     getDataStatus();
     getSimSettings();
   }, []);
@@ -130,6 +138,9 @@ function Simulator() {
         url: "/api/simulator/",
         data: {
           operation: "stop",
+        },
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
         },
       });
       console.log(res.data);

@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
-import { isAuthAtom, navMenuAtom } from "../../Store";
-import { setLogging } from "../../Utils";
+import { isAuthAtom, navMenuAtom } from "../Store";
+import { setLogging, getAPIStatus } from "../Utils";
 
 function Logout(props) {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ function Logout(props) {
   useEffect(() => {
     setNavMenu("logout");
     setLogging("INFO", "Moved to Logout");
+    getAPIStatus(setIsAuth);
   }, []);
 
   // const handleLogout = (e) => {

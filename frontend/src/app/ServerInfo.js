@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { navMenuAtom } from "../../Store";
-import { to_fixed, setLogging } from "../../Utils";
+import { navMenuAtom, isAuthAtom } from "../Store";
+import { to_fixed, setLogging, getAPIStatus } from "../Utils";
 import { useSetRecoilState } from "recoil";
 
 function ServerInfo() {
@@ -9,11 +9,13 @@ function ServerInfo() {
   const [simLog, setSimLog] = useState([]);
   const [errorLog, setErrorLog] = useState([]);
   const setNavMenu = useSetRecoilState(navMenuAtom);
+  const setIsAuth = useSetRecoilState(isAuthAtom);
 
   // 페이지 첫 로드 시
   useEffect(() => {
     setLogging("INFO", "Moved to ServerInfo");
     setNavMenu("serverinfo");
+    getAPIStatus(setIsAuth);
     getServerInfo();
     getSimLog();
 

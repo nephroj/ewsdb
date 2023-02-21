@@ -3,22 +3,31 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
+  isAuthAtom,
   navMenuAtom,
   simStatusAtom,
   updateLoadingAtom,
   dataStatusAtom,
 } from "../Store";
-import { make_comma, make_date, timeFormatting, setLogging } from "../Utils";
+import {
+  make_comma,
+  make_date,
+  timeFormatting,
+  setLogging,
+  getAPIStatus,
+} from "../Utils";
 
 function HomeUI() {
   const [updateLoading, setUpdateLoading1] = useRecoilState(updateLoadingAtom);
   const setNavMenu = useSetRecoilState(navMenuAtom);
   const [simStatus, setSimStatus] = useRecoilState(simStatusAtom);
   const [dataStatus, setDataStatus] = useRecoilState(dataStatusAtom);
+  const setIsAuth = useSetRecoilState(isAuthAtom);
 
   useEffect(() => {
     setLogging("INFO", "Moved to Home");
     setNavMenu("home");
+    getAPIStatus(setIsAuth);
     getDataStatus();
   }, [updateLoading]);
 
@@ -45,7 +54,7 @@ function HomeUI() {
       const results = res.data;
       setSimStatus(results);
     } catch (err) {
-      console.log(err.response.data.detail);
+      console.log(err.response.status);
     }
   }
 

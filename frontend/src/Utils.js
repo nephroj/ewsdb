@@ -18,6 +18,25 @@ export async function setLogging(level, message) {
   }
 }
 
+// 401 error가 있으면 logout 시킴
+export async function getAPIStatus(setIsAuth) {
+  try {
+    const res = await axios({
+      method: "get",
+      url: "/api/simstatus/",
+      headers: {
+        Authorization: `Token ${localStorage.getItem("token")}`,
+      },
+    });
+  } catch (err) {
+    console.log(err.response.status);
+    if (err.response.status === 401) {
+      localStorage.clear();
+      setIsAuth(false);
+    }
+  }
+}
+
 export function timeFormatting(time) {
   const day = time > 1440 ? Math.floor(time / 1440) : 0;
   const remain_time = time - day * 1440;

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { isAuthAtom } from "../../Store";
-import { setLogging } from "../../Utils";
+import { isAuthAtom } from "../Store";
+import { setLogging } from "../Utils";
 
 function Login() {
   const navigate = useNavigate();
