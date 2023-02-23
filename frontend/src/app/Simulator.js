@@ -7,13 +7,13 @@ import {
   make_date,
   slice_date,
   setLogging,
-  getAPIStatus,
+  getAPI,
 } from "../Utils";
 
 function Simulator() {
   // const [simStatus, setSimStatus] = useState({});
   const [dataStatus, setDataStatus] = useState({});
-  const [simLoading, setSimLoading] = useState(false);
+  const [simDoing, setSimDoing] = useState(false);
   const [simSpeed, setSimSpeed] = useState(100);
   const [startRadio, setStartRadio] = useState("start_manual");
   const [startDate, setStartDate] = useState("");
@@ -26,7 +26,6 @@ function Simulator() {
   useEffect(() => {
     setLogging("INFO", "Moved to Simulator");
     setNavMenu("simulator");
-    getAPIStatus(setIsAuth);
     getDataStatus();
     getSimSettings();
   }, []);
@@ -45,61 +44,35 @@ function Simulator() {
 
   // SimSettings 불러오기
   async function getSimSettings() {
-    try {
-      const res = await axios({
-        method: "get",
-        url: "/api/simsettings/",
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      });
-      const results = res.data;
-      setStartDateMan(results.sim_start_date);
-      setSimSpeed(results.sim_speed);
-      setStartDate(results.sim_start_date);
-      setStartRadio(results.sim_start_radio);
-    } catch (err) {
-      console.log(err.response.data.detail);
+    const response = await getAPI("/api/simsettings/");
+    if (response.status === 401) {
+      localStorage.clear();
+      setIsAuth(false);
     }
+    const results = response.data;
+    setStartDateMan(results.sim_start_date);
+    setSimSpeed(results.sim_speed);
+    setStartDate(results.sim_start_date);
+    setStartRadio(results.sim_start_radio);
   }
 
   // SimStatus 불러오기
   async function getSimStatus() {
-    try {
-      const res = await axios({
-        method: "get",
-        url: "/api/simstatus/",
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      });
-      const results = res.data;
-      setSimStatus(results);
-    } catch (err) {
-      console.log(err.response.data.detail);
-    }
+    const response = await getAPI("/api/simstatus/");
+    const results = response.data;
+    setSimStatus(results);
   }
 
   // 풀링된 데이터 현황 불러오기
   async function getDataStatus() {
-    try {
-      const res = await axios({
-        method: "get",
-        url: "/api/datainfo/",
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      });
-      const results = res.data;
-      setDataStatus(results);
-    } catch (err) {
-      console.log(err.response.data.detail);
-    }
+    const response = await getAPI("/api/datainfo/");
+    const results = response.data;
+    setDataStatus(results);
   }
 
   async function onStart(e) {
     e.preventDefault();
-    setSimLoading(true);
+    setSimDoing(true);
 
     try {
       const res = await axios({
@@ -120,7 +93,7 @@ function Simulator() {
         ...prevState,
         is_active: "1",
       }));
-      setTimeout(() => setSimLoading(false), 3000);
+      setTimeout(() => setSimDoing(false), 3000);
       setLogging(
         "INFO",
         "Simulation started | " + startDate + " | x" + simSpeed
@@ -325,7 +298,7 @@ function Simulator() {
             <tbody>
               <tr>
                 <th scope="row">실행 시작 시각</th>
-                <td>{!simLoading && simStatus.sim_start_time}</td>
+                <td>{!simDoing && simStatus.sim_start_time}</td>
               </tr>
               <tr>
                 <th scope="row">실행 마지막 시각</th>
@@ -334,47 +307,47 @@ function Simulator() {
               <tr>
                 <th scope="row">실행 시간</th>
                 <td>
-                  {!simLoading
+                  {!simDoing
                     ? timeFormatting(parseInt(simStatus.sim_duration))
                     : "0시간 0분"}
                 </td>
               </tr>
               <tr>
                 <th scope="row">데이터 상 시작 시각</th>
-                <td>{!simLoading && simStatus.sim_data_start_time}</td>
+                <td>{!simDoing && simStatus.sim_data_start_time}</td>
               </tr>
 
               <tr>
                 <th scope="row">데이터 상 마지막 시각</th>
-                <td>{!simLoading && simStatus.sim_data_last_time}</td>
+                <td>{!simDoing && simStatus.sim_data_last_time}</td>
               </tr>
               <tr>
                 <th scope="row">데이터 상 경과 시간</th>
                 <td>
-                  {!simLoading
+                  {!simDoing
                     ? timeFormatting(parseInt(simStatus.sim_data_duration))
                     : "0시간 0분"}
                 </td>
               </tr>
               <tr>
                 <th scope="row">데이터 1회 생성 시간</th>
-                <td>{!simLoading ? simStatus.avg_save_time : "0"}초</td>
+                <td>{!simDoing ? simStatus.avg_save_time : "0"}초</td>
               </tr>
               <tr>
                 <th scope="row">실제 실행 속도</th>
-                <td>{!simLoading ? simStatus.sim_speed : "0"}배속</td>
+                <td>{!simDoing ? simStatus.sim_speed : "0"}배속</td>
               </tr>
               <tr>
                 <th scope="row">생성된 입원정보 행 수</th>
-                <td>{!simLoading ? simStatus.sim_hosp_n : "0"}행</td>
+                <td>{!simDoing ? simStatus.sim_hosp_n : "0"}행</td>
               </tr>
               <tr>
                 <th scope="row">생성된 생체징후 행 수</th>
-                <td>{!simLoading ? simStatus.sim_vital_n : "0"}행</td>
+                <td>{!simDoing ? simStatus.sim_vital_n : "0"}행</td>
               </tr>
               <tr>
                 <th scope="row">생성된 검사결과 행 수</th>
-                <td>{!simLoading ? simStatus.sim_lab_n : "0"}행</td>
+                <td>{!simDoing ? simStatus.sim_lab_n : "0"}행</td>
               </tr>
             </tbody>
           </table>

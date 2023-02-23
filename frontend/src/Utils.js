@@ -1,4 +1,7 @@
+import React, { useEffect } from "react";
 import axios from "axios";
+import { useSetRecoilState } from "recoil";
+import { isAuthAtom } from "./Store";
 
 export async function setLogging(level, message) {
   try {
@@ -19,21 +22,45 @@ export async function setLogging(level, message) {
 }
 
 // 401 error가 있으면 logout 시킴
-export async function getAPIStatus(setIsAuth) {
+export function LogoutWhen401() {
+  const setIsAuth = useSetRecoilState(isAuthAtom);
+  useEffect(() => {
+    getAPIStatus();
+  }, []);
+
+  async function getAPIStatus() {
+    try {
+      const res = await axios({
+        method: "get",
+        url: "/api/",
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      });
+    } catch (err) {
+      if (err.response.status === 401) {
+        localStorage.clear();
+        setIsAuth(false);
+      }
+    }
+  }
+
+  return <div></div>;
+}
+
+// API Call
+export async function getAPI(url) {
   try {
-    const res = await axios({
+    const response = await axios({
       method: "get",
-      url: "/api/simstatus/",
+      url: url,
       headers: {
         Authorization: `Token ${localStorage.getItem("token")}`,
       },
     });
-  } catch (err) {
-    console.log(err.response.status);
-    if (err.response.status === 401) {
-      localStorage.clear();
-      setIsAuth(false);
-    }
+    return response;
+  } catch (error) {
+    return error.response;
   }
 }
 

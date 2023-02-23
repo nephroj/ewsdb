@@ -14,7 +14,7 @@ import {
   make_date,
   timeFormatting,
   setLogging,
-  getAPIStatus,
+  getAPI,
 } from "../Utils";
 
 function HomeUI() {
@@ -27,7 +27,6 @@ function HomeUI() {
   useEffect(() => {
     setLogging("INFO", "Moved to Home");
     setNavMenu("home");
-    getAPIStatus(setIsAuth);
     getDataStatus();
   }, [updateLoading]);
 
@@ -41,38 +40,20 @@ function HomeUI() {
     }
   }, [simStatus.is_active]);
 
-  // Simuation 현황 불러오기
-  async function getSimStatus() {
-    try {
-      const res = await axios({
-        method: "get",
-        url: "/api/simstatus/",
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      });
-      const results = res.data;
-      setSimStatus(results);
-    } catch (err) {
-      console.log(err.response.status);
-    }
-  }
-
   // 풀링된 데이터 현황 불러오기
   async function getDataStatus() {
-    try {
-      const res = await axios({
-        method: "get",
-        url: "/api/datainfo/",
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      });
-      const results = res.data;
-      setDataStatus(results);
-    } catch (err) {
-      console.log(err.response.data.detail);
+    const response = await getAPI("/api/datainfo/");
+    if (response.status === 401) {
+      localStorage.clear();
+      setIsAuth(false);
     }
+    setDataStatus(response.data);
+  }
+
+  // Simuation 현황 불러오기
+  async function getSimStatus() {
+    const response = await getAPI("/api/simstatus/");
+    setSimStatus(response.data);
   }
 
   // 정보 업데이트 클릭 시 풀링된 데이터 현황 업데이트

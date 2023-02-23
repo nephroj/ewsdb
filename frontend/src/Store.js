@@ -1,4 +1,5 @@
-import { atom, selector } from "recoil";
+import { atom, selector, selectorFamily } from "recoil";
+import axios from "axios";
 
 // define atoms
 export const isAuthAtom = atom({
@@ -51,3 +52,34 @@ export const mdValErrorAtom = atom({
     content: "",
   },
 });
+
+// export const loadSimSettings = selector({
+//   key: "loadSimSettings",
+//   get: async ({ get }) => {
+//     const res = await axios({
+//       method: "get",
+//       url: "/api/simsettings/",
+//       headers: {
+//         Authorization: `Token ${localStorage.getItem("token")}`,
+//       },
+//     });
+//     const results = res.data;
+//     return results;
+//   },
+// });
+
+// export const getAPILoadable = selectorFamily({
+//   key: "getAPILoadable",
+//   get:
+//     (url) =>
+//     async ({ get }) => {
+//       const response = await axios({
+//         method: "get",
+//         url: url,
+//         headers: {
+//           Authorization: `Token ${localStorage.getItem("token")}`,
+//         },
+//       });
+//       return response.data;
+//     },
+// });

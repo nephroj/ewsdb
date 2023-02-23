@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { navMenuAtom, isAuthAtom } from "../Store";
-import { to_fixed, setLogging, getAPIStatus } from "../Utils";
+import { to_fixed, setLogging, getAPI } from "../Utils";
 import { useSetRecoilState } from "recoil";
 
 function ServerInfo() {
@@ -15,7 +14,6 @@ function ServerInfo() {
   useEffect(() => {
     setLogging("INFO", "Moved to ServerInfo");
     setNavMenu("serverinfo");
-    getAPIStatus(setIsAuth);
     getServerInfo();
     getSimLog();
 
@@ -27,37 +25,19 @@ function ServerInfo() {
 
   // ServerInfo 불러오기
   async function getServerInfo() {
-    try {
-      const res = await axios({
-        method: "get",
-        url: "/api/serverinfo/",
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      });
-      const results = res.data;
-      setServerData(results);
-    } catch (err) {
-      console.log(err.response);
+    const response = await getAPI("/api/serverinfo/");
+    if (response.status === 401) {
+      localStorage.clear();
+      setIsAuth(false);
     }
+    setServerData(response.data);
   }
 
   // SimLog 불러오기
   async function getSimLog() {
-    try {
-      const res = await axios({
-        method: "get",
-        url: "/api/viewlog/",
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      });
-      const results = res.data;
-      setSimLog(results.sim_log);
-      setErrorLog(results.error_log);
-    } catch (err) {
-      console.log(err.response);
-    }
+    const response = await getAPI("/api/viewlog/");
+    setSimLog(response.data.sim_log);
+    setErrorLog(response.data.error_log);
   }
 
   return (
