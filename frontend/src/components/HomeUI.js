@@ -132,6 +132,7 @@ function HomeUI() {
                     className="btn btn-rosybrown col-12 col-md-6 mx-auto"
                     type="button"
                     onClick={updateDataStatus}
+                    disabled
                   >
                     정보 업데이트
                   </button>

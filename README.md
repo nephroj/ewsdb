@@ -6,7 +6,7 @@
 
 ```
 cp nginx_80.conf ./nginx
-vim nginx/nginx_80.conf
+vi nginx/nginx_80.conf
 ```
 
 `nginx_80.conf` 파일 내 example.com 부분을 실제 도메인 이름으로 바꿈
@@ -14,7 +14,7 @@ vim nginx/nginx_80.conf
 ## django.env 파일 작성
 
 ```
-vim backend/django.env
+vi backend/django.env
 ```
 
 ```
@@ -42,7 +42,7 @@ docker-compose.yml 파일 수정
 example.com 부분을 실제 도메인 이름으로 바꿈
 
 ```
-vim docker-compose.yml
+vi docker-compose.yml
 ```
 
 docker-compose 실행하여 최종적으로 서버 구동
@@ -76,7 +76,7 @@ docker compose run certbot certonly --webroot --webroot-path /var/www/certbot/ -
 ```
 rm nginx/nginx_80.conf
 cp nginx_443.conf ./nginx
-vim nginx/nginx_443.conf
+vi nginx/nginx_443.conf
 ```
 
-`nginx_43.conf` 파일 내 example.com 부분을 실제 도메인 이름으로 바꿈
+`nginx_443.conf` 파일 내 example.com 부분을 실제 도메인 이름으로 바꿈
